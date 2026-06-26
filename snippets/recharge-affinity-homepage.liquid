@@ -56,52 +56,66 @@
     margin: 0;
   }
 
-  /* --- Navigation tabs --- */
-  .rc-nav {
-    display: flex;
-    flex-direction: row;
-    gap: 8px;
-    overflow-x: auto;
-    padding-bottom: 8px;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
+  /* --- Native Recharge portal navigation tab overrides --- */
+  .recharge-theme [role="tablist"] {
+    display: flex !important;
+    flex-direction: row !important;
+    gap: 8px !important;
+    overflow-x: auto !important;
+    padding-bottom: 8px !important;
+    -webkit-overflow-scrolling: touch !important;
+    scrollbar-width: none !important;
   }
 
-  .rc-nav::-webkit-scrollbar {
+  .recharge-theme [role="tablist"]::-webkit-scrollbar {
     display: none;
   }
 
-  .rc-nav__tab {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    border-radius: 60px;
-    padding: 10px 24px 12px 24px;
-    border: 1px solid #202635;
-    font-size: 14px;
-    line-height: 20px;
-    text-align: center;
-    white-space: nowrap;
-    color: #202635;
-    background-color: #FFFFFF;
-    text-decoration: none;
-    font-family: 'FT System', var(--font-body--family), sans-serif;
-    font-weight: 400;
-    cursor: pointer;
-    transition: background-color 0.15s ease;
+  .recharge-theme [role="tablist"] [role="tab"],
+  .recharge-theme [role="tablist"] a,
+  .recharge-theme [role="tablist"] button {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 10px !important;
+    border-radius: 60px !important;
+    padding: 10px 24px 12px 24px !important;
+    border: 1px solid #202635 !important;
+    font-size: 14px !important;
+    line-height: 20px !important;
+    text-align: center !important;
+    white-space: nowrap !important;
+    color: #202635 !important;
+    background-color: #FFFFFF !important;
+    text-decoration: none !important;
+    font-family: 'FT System', var(--font-body--family), sans-serif !important;
+    font-weight: 400 !important;
+    cursor: pointer !important;
+    transition: background-color 0.15s ease !important;
   }
 
-  .rc-nav__tab:hover {
-    background-color: #f0f4f8;
+  .recharge-theme [role="tablist"] [role="tab"]:hover,
+  .recharge-theme [role="tablist"] a:hover,
+  .recharge-theme [role="tablist"] button:hover {
+    background-color: #f0f4f8 !important;
   }
 
-  .rc-nav__tab--active {
-    background-color: #D9E8F4;
+  .recharge-theme [role="tablist"] [role="tab"][aria-selected="true"],
+  .recharge-theme [role="tablist"] [role="tab"].active,
+  .recharge-theme [role="tablist"] a[aria-selected="true"],
+  .recharge-theme [role="tablist"] a[aria-current],
+  .recharge-theme [role="tablist"] a.active,
+  .recharge-theme [role="tablist"] button[aria-selected="true"],
+  .recharge-theme [role="tablist"] button.active {
+    background-color: #D9E8F4 !important;
   }
 
-  .rc-nav__tab--active:hover {
-    background-color: #D9E8F4;
+  .recharge-theme [role="tablist"] [role="tab"][aria-selected="true"]:hover,
+  .recharge-theme [role="tablist"] a[aria-selected="true"]:hover,
+  .recharge-theme [role="tablist"] a.active:hover,
+  .recharge-theme [role="tablist"] button[aria-selected="true"]:hover,
+  .recharge-theme [role="tablist"] button.active:hover {
+    background-color: #D9E8F4 !important;
   }
 
   /* --- Tracker widget --- */
@@ -413,25 +427,12 @@
     color: #202635;
   }
 
-  .recharge-button {
-    background-color: #2C70BB;
-    color: #FFFFFF;
-    border-radius: 100px;
-    font-family: 'FT System', var(--font-body--family), sans-serif;
-    font-size: 14px;
-    line-height: 20px;
-    font-weight: 400;
-  }
-
-  .recharge-button:hover {
-    background-color: #235a96;
-  }
-
   .recharge-card {
     border: 1px solid #D9E8F4;
     border-radius: 4px;
     background: #FFFFFF;
     box-shadow: none;
+    padding: 18px 18px 22px;
   }
 
   /* --- Portal-scoped header border --- */
@@ -450,6 +451,137 @@
     text-decoration: underline;
     color: #2C70BB;
   }
+
+  /* =============================================
+     (E) Next Order Card — Figma-Matched Overrides
+     ============================================= */
+
+  /* --- Primary button (Send Now, Add product, etc.) --- */
+  .recharge-button {
+    background-color: #2C70BB;
+    color: #FFFFFF;
+    border: 2px solid #2C70BB;
+    border-radius: 100px;
+    font-family: 'FT System', var(--font-body--family), sans-serif;
+    font-size: 14px;
+    line-height: normal;
+    font-weight: 400;
+    padding: 13px 24px 14px;
+    min-height: 46px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background-color 0.15s ease, border-color 0.15s ease;
+    box-sizing: border-box;
+  }
+
+  .recharge-button:hover {
+    background-color: #235a96;
+    border-color: #235a96;
+  }
+
+  /* --- Secondary / outline button (Reschedule) --- */
+  .recharge-button--secondary,
+  .recharge-button--outline,
+  .recharge-button[class*="secondary"],
+  .recharge-button[class*="outline"] {
+    background-color: #FFFFFF !important;
+    color: #202635 !important;
+    border: 1px solid #202635 !important;
+    border-radius: 57px !important;
+  }
+
+  .recharge-button--secondary:hover,
+  .recharge-button--outline:hover,
+  .recharge-button[class*="secondary"]:hover,
+  .recharge-button[class*="outline"]:hover {
+    background-color: #f0f4f8 !important;
+  }
+
+  /* --- Status / savings alert (green border, light bg) --- */
+  .recharge-card [class*="alert"],
+  .recharge-card [class*="savings"],
+  .recharge-card [class*="info-banner"],
+  .recharge-card [class*="notification"] {
+    background-color: #F2F7FB !important;
+    border: 1px solid #5ABE8A !important;
+    border-radius: 4px !important;
+    padding: 8px 12px !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 10px !important;
+    font-size: 14px !important;
+    line-height: 1.5 !important;
+    color: #202635 !important;
+    font-family: 'FT System', var(--font-body--family), sans-serif !important;
+  }
+
+  .recharge-card [class*="alert"] svg,
+  .recharge-card [class*="savings"] svg,
+  .recharge-card [class*="notification"] svg {
+    width: 20px !important;
+    height: 20px !important;
+    flex-shrink: 0 !important;
+    fill: #5ABE8A !important;
+    color: #5ABE8A !important;
+  }
+
+  /* --- Next order heading hierarchy --- */
+  /* "Your next order" label should be small and gray */
+  .recharge-card [class*="next-order"] [class*="label"],
+  .recharge-card [class*="next-order"] [class*="subtitle"],
+  .recharge-card [class*="order-header"] [class*="label"],
+  .recharge-card > [class*="header"] [class*="sub"],
+  .recharge-card [class*="sub-heading"] {
+    font-size: 18px !important;
+    line-height: 1.4 !important;
+    color: #797D86 !important;
+    font-weight: 400 !important;
+    font-family: 'FT System', var(--font-body--family), sans-serif !important;
+  }
+
+  /* Date should be large and prominent */
+  .recharge-card [class*="next-order"] .recharge-heading,
+  .recharge-card [class*="order-header"] .recharge-heading,
+  .recharge-card > [class*="header"] .recharge-heading {
+    font-size: 36px !important;
+    line-height: 1.3 !important;
+    letter-spacing: -0.36px !important;
+    color: #202635 !important;
+    font-weight: 300 !important;
+    font-family: 'FT System', var(--font-heading--family), sans-serif !important;
+  }
+
+  /* Product name under date */
+  .recharge-card [class*="next-order"] [class*="product-name"],
+  .recharge-card [class*="next-order"] [class*="product-title"] {
+    font-size: 20px !important;
+    line-height: 1.3 !important;
+    letter-spacing: -0.2px !important;
+    color: #202635 !important;
+    padding-top: 4px !important;
+  }
+
+  /* --- CTA button group (Send Now + Reschedule side by side) --- */
+  .recharge-card [class*="action"],
+  .recharge-card [class*="button-group"],
+  .recharge-card [class*="cta-group"],
+  .recharge-card [class*="buttons"] {
+    display: flex !important;
+    gap: 12px !important;
+    width: 100% !important;
+  }
+
+  .recharge-card [class*="action"] .recharge-button,
+  .recharge-card [class*="button-group"] .recharge-button,
+  .recharge-card [class*="cta-group"] .recharge-button,
+  .recharge-card [class*="buttons"] .recharge-button {
+    flex: 1 !important;
+    min-width: 0 !important;
+  }
 </style>
 
 {% comment %} =============================================
@@ -458,12 +590,6 @@
 <script type="text/html" data-recharge-slot="*.header">
   <div class="rc-header-slot">
     <h2 class="rc-welcome" id="rc-welcome-heading">Welcome back!</h2>
-    <nav class="rc-nav" id="rc-nav" aria-label="Portal navigation">
-      <a href="/tools/recurring/portal/overview" class="rc-nav__tab rc-nav__tab--active" data-rc-nav="overview">Dashboard</a>
-      <a href="/tools/recurring/portal/subscriptions" class="rc-nav__tab" data-rc-nav="subscriptions">Subscriptions</a>
-      <a href="/tools/recurring/portal/orders" class="rc-nav__tab" data-rc-nav="orders">Order History</a>
-      <a href="/tools/recurring/portal/customer" class="rc-nav__tab" data-rc-nav="customer">Account</a>
-    </nav>
   </div>
 </script>
 
@@ -636,33 +762,6 @@
   }
 
   /* -------------------------------------------------
-     Navigation tab active state
-     ------------------------------------------------- */
-  function updateActiveTab(pathname) {
-    const tabs = document.querySelectorAll('[data-rc-nav]');
-    if (!tabs.length) return;
-
-    const path = (pathname || '').toLowerCase();
-
-    for (const tab of tabs) {
-      const navKey = tab.getAttribute('data-rc-nav');
-      let isActive = false;
-
-      if (navKey === 'overview' && (path.includes('/overview') || path === '/tools/recurring/portal' || path === '/tools/recurring/portal/')) {
-        isActive = true;
-      } else if (navKey === 'subscriptions' && path.includes('/subscriptions')) {
-        isActive = true;
-      } else if (navKey === 'orders' && path.includes('/orders')) {
-        isActive = true;
-      } else if (navKey === 'customer' && (path.includes('/customer') || path.includes('/shipping') || path.includes('/payment_methods'))) {
-        isActive = true;
-      }
-
-      tab.classList.toggle('rc-nav__tab--active', isActive);
-    }
-  }
-
-  /* -------------------------------------------------
      Tracker widget initialization
      ------------------------------------------------- */
   async function initTracker() {
@@ -778,16 +877,7 @@
 
     if (name === 'header') {
       initWelcome();
-      /* Set initial active tab based on current pathname */
-      const pathname = (event.detail && event.detail.pathname) || window.location.pathname;
-      updateActiveTab(pathname);
     }
-  });
-
-  /* Update active tab on navigation */
-  document.addEventListener('Recharge::location::change', function(event) {
-    const pathname = (event.detail && event.detail.pathname) || window.location.pathname;
-    updateActiveTab(pathname);
   });
 
   /* Re-initialize tracker when order changes */
