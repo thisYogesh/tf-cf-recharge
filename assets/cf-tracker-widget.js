@@ -1109,6 +1109,6 @@ class CfTrackerWidget extends HTMLElement {
   }
 }
 
-customElements.define('cf-tracker-widget', CfTrackerWidget);
-
-export default CfTrackerWidget;
+if (!customElements.get('cf-tracker-widget')) {
+  customElements.define('cf-tracker-widget', CfTrackerWidget);
+}
