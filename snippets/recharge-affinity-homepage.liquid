@@ -8,7 +8,7 @@
   See: https://support.getrecharge.com/hc/en-us/articles/360008829993-Recharge-API
 {% endcomment %}
 
-{%- assign apiToken = 'strfnt_YOUR_TOKEN_HERE' -%}
+{%- assign apiToken = 'strfnt_472024372209ef3edd01aa9f01631acc8ea24024a9d41e00f2e2ce524de076ba' -%}
 
 {%- comment -%} Capture inline SVG icons for use in slot HTML {%- endcomment -%}
 {%- capture check_circle_svg -%}{{ 'check-circle.svg' | inline_asset_content }}{%- endcapture -%}
@@ -17,7 +17,7 @@
 {%- capture info_svg -%}{{ 'info.svg' | inline_asset_content }}{%- endcapture -%}
 
 {%- comment -%} Get the tracker background image URL from Shopify Files {%- endcomment -%}
-{%- assign tracker_bg_url = 'tracker-lockup-tracker-widget-4713913.png' | file_img_url: '354x438' -%}
+{%- assign tracker_bg_url = 'tracker-lockup-tracker-widget-4713913.png' | file_url -%}
 
 <style>
   /* =============================================
@@ -33,8 +33,8 @@
     --recharge-button-color: #FFFFFF;
     --recharge-button-border-radius: 100px;
     --recharge-corners-radius: 4px;
-    --recharge-typography-heading-font-family: var(--font-heading--family, 'Inter', sans-serif);
-    --recharge-typography-body-font-family: var(--font-body--family, 'Inter', sans-serif);
+    --recharge-typography-heading-font-family: 'FT System', var(--font-heading--family), sans-serif;
+    --recharge-typography-body-font-family: 'FT System', var(--font-body--family), sans-serif;
     --recharge-color-brand: #2C70BB;
     --recharge-color-brand-120: #235a96;
     --recharge-color-brand-85: #D9E8F4;
@@ -52,7 +52,7 @@
     letter-spacing: -0.52px;
     color: #202635;
     font-weight: 400;
-    font-family: var(--font-heading--family, 'Inter', sans-serif);
+    font-family: 'FT System', var(--font-heading--family), sans-serif;
     margin: 0;
   }
 
@@ -86,7 +86,7 @@
     color: #202635;
     background-color: #FFFFFF;
     text-decoration: none;
-    font-family: var(--font-body--family, 'Inter', sans-serif);
+    font-family: 'FT System', var(--font-body--family), sans-serif;
     font-weight: 400;
     cursor: pointer;
     transition: background-color 0.15s ease;
@@ -129,7 +129,7 @@
     letter-spacing: -0.22px;
     color: #FFFFFF;
     font-weight: 400;
-    font-family: var(--font-heading--family, 'Inter', sans-serif);
+    font-family: 'FT System', var(--font-heading--family), sans-serif;
     text-align: center;
     margin: 0;
     width: 100%;
@@ -169,7 +169,7 @@
     letter-spacing: -1.68px;
     color: #FFFFFF;
     font-weight: 400;
-    font-family: var(--font-heading--family, 'Inter', sans-serif);
+    font-family: 'FT System', var(--font-heading--family), sans-serif;
     text-align: center;
   }
 
@@ -202,7 +202,7 @@
     color: #FFFFFF;
     text-decoration: underline;
     text-align: center;
-    font-family: var(--font-body--family, 'Inter', sans-serif);
+    font-family: 'FT System', var(--font-body--family), sans-serif;
     font-weight: 400;
   }
 
@@ -272,7 +272,7 @@
     line-height: 15px;
     letter-spacing: 0.1px;
     color: #202635;
-    font-family: var(--font-body--family, 'Inter', sans-serif);
+    font-family: 'FT System', var(--font-body--family), sans-serif;
     font-weight: 400;
     flex: 1;
   }
@@ -310,7 +310,7 @@
     color: #FFFFFF;
     text-decoration: underline;
     text-align: center;
-    font-family: var(--font-body--family, 'Inter', sans-serif);
+    font-family: 'FT System', var(--font-body--family), sans-serif;
     font-weight: 400;
     display: inline-flex;
     align-items: center;
@@ -353,7 +353,7 @@
     font-size: 12px;
     line-height: 16px;
     color: #202635;
-    font-family: var(--font-body--family, 'Inter', sans-serif);
+    font-family: 'FT System', var(--font-body--family), sans-serif;
     font-weight: 400;
   }
 
@@ -366,7 +366,7 @@
     line-height: 22px;
     letter-spacing: -0.16px;
     color: #202635;
-    font-family: var(--font-body--family, 'Inter', sans-serif);
+    font-family: 'FT System', var(--font-body--family), sans-serif;
     font-weight: 400;
   }
 
@@ -395,6 +395,60 @@
       font-size: 14px;
       line-height: 21px;
     }
+  }
+
+  /* =============================================
+     (D) Affinity Stable-Class Overrides
+     ============================================= */
+
+  /* --- Native Recharge element styling --- */
+  .recharge-heading {
+    font-family: 'FT System', var(--font-heading--family), sans-serif;
+    color: #202635;
+    font-weight: 400;
+  }
+
+  .recharge-text {
+    font-family: 'FT System', var(--font-body--family), sans-serif;
+    color: #202635;
+  }
+
+  .recharge-button {
+    background-color: #2C70BB;
+    color: #FFFFFF;
+    border-radius: 100px;
+    font-family: 'FT System', var(--font-body--family), sans-serif;
+    font-size: 14px;
+    line-height: 20px;
+    font-weight: 400;
+  }
+
+  .recharge-button:hover {
+    background-color: #235a96;
+  }
+
+  .recharge-card {
+    border: 1px solid #D9E8F4;
+    border-radius: 4px;
+    background: #FFFFFF;
+    box-shadow: none;
+  }
+
+  /* --- Portal-scoped header border --- */
+  .header {
+    border-bottom: 1px solid #D9E8F4;
+  }
+
+  /* --- Native portal link styling --- */
+  .recharge-card a {
+    color: #2C70BB;
+  }
+
+  .recharge-card a[href*='edit'],
+  .recharge-card a[href*='address'],
+  .recharge-card a[href*='payment'] {
+    text-decoration: underline;
+    color: #2C70BB;
   }
 </style>
 
@@ -494,10 +548,6 @@
 {% comment %} =============================================
    JavaScript: Recharge SDK + Tracker Widget Logic
    ============================================= {% endcomment %}
-<script src="https://static.rechargecdn.com/assets/storefront/recharge-client-1.36.0.min.js"></script>
-<script>
-  recharge.init({ storefrontAccessToken: '{{ apiToken }}' });
-</script>
 <script>
 (function() {
   'use strict';
