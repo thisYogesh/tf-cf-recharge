@@ -39,6 +39,14 @@ const CF_STYLES = `
     gap: 20px;
     padding: 20px 0;
     position: relative;
+    background-color: #1B3A5C;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    border-radius: 4px;
+    min-height: 438px;
+    width: 354px;
+    max-width: 100%;
   }
 
   .cf-tracker__title {
@@ -648,7 +656,7 @@ class CfTrackerWidget extends HTMLElement {
       'days-left', 'total-days', 'delivered-date', 'replace-date',
       'household-size', 'zip-code', 'contaminant-count',
       'gallons-filtered', 'days-of-protection', 'bottles-saved',
-      'alert-message', 'location-alert-message'
+      'alert-message', 'location-alert-message', 'bg-image'
     ];
   }
 
@@ -762,9 +770,12 @@ class CfTrackerWidget extends HTMLElement {
     const arcLength = Math.PI * arcR;
     const fillLength = arcLength * percentage;
 
+    const bgImage = this.getAttribute('bg-image');
+    const bgStyle = bgImage ? `background-image: url('${bgImage}');` : '';
+
     this.shadowRoot.innerHTML = `
       <style>${CF_STYLES}</style>
-      <div class="cf-tracker" id="cf-root">
+      <div class="cf-tracker" id="cf-root" style="${bgStyle}">
         ${this._currentView === 'main' ? this._renderMain(arcPath, arcLength, fillLength) : ''}
         ${this._currentView === 'reset' ? this._renderResetView() : ''}
         ${this._currentView === 'household' ? this._renderHouseholdView() : ''}
