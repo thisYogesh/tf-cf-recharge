@@ -166,22 +166,16 @@ const CF_STYLES = `
   .cf-tracker__info-icon {
     width: 13px;
     height: 13px;
-    border-radius: 50%;
-    background: var(--cf-color-white);
-    display: flex;
+    flex-shrink: 0;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
-    flex-shrink: 0;
   }
 
-  .cf-tracker__info-icon-text {
-    font-family: var(--cf-font-body);
-    font-weight: 400;
-    font-size: 10.4px;
-    line-height: 14px;
-    letter-spacing: -0.1px;
-    text-align: center;
-    color: var(--cf-color-foreground-dark);
+  .cf-tracker__info-icon svg {
+    width: 13px;
+    height: 13px;
+    display: block;
   }
 
   .cf-tracker__stats-link {
@@ -637,6 +631,8 @@ const SVG_CLOSE_SMALL = `<svg width="10" height="10" viewBox="0 0 10 10" fill="n
 
 const SVG_MAP_PIN = `<svg width="7" height="14" viewBox="0 0 7 14" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M3.5 0C1.567 0 0 1.567 0 3.5C0 6.125 3.5 10 3.5 10S7 6.125 7 3.5C7 1.567 5.433 0 3.5 0ZM3.5 4.75C2.81 4.75 2.25 4.19 2.25 3.5C2.25 2.81 2.81 2.25 3.5 2.25C4.19 2.25 4.75 2.81 4.75 3.5C4.75 4.19 4.19 4.75 3.5 4.75Z" fill="#ED7C5C"/></svg>`;
 
+const SVG_INFO_CIRCLE = `<svg width="13" height="13" viewBox="0 0 13 13" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="6.5" cy="6.5" r="6.5" fill="#FFFFFF"/><text x="6.5" y="10" text-anchor="middle" font-size="10.4" font-weight="400" fill="#202635" style="font-family:'FT System',system-ui,sans-serif;letter-spacing:-0.1px">i</text></svg>`;
+
 class CfTrackerWidget extends HTMLElement {
   constructor() {
     super();
@@ -658,7 +654,35 @@ class CfTrackerWidget extends HTMLElement {
 
   connectedCallback() {
     this._selectedHousehold = this.getAttribute('household-size') || '2';
-    this.render();
+    this._containerWidth = 0;
+
+    /* Track container width via ResizeObserver for reliable desktop/mobile detection */
+    this._resizeObserver = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        const newWidth = entry.contentRect.width;
+        if (this._containerWidth !== newWidth) {
+          this._containerWidth = newWidth;
+          /* Re-render sub-views to switch between modal and inline layout */
+          if (this._currentView !== 'main') {
+            this.render();
+          }
+        }
+      }
+    });
+    this._resizeObserver.observe(this);
+
+    /* Defer first render to ensure layout is computed */
+    requestAnimationFrame(() => {
+      this._containerWidth = this.offsetWidth;
+      this.render();
+    });
+  }
+
+  disconnectedCallback() {
+    if (this._resizeObserver) {
+      this._resizeObserver.disconnect();
+      this._resizeObserver = null;
+    }
   }
 
   attributeChangedCallback() {
@@ -721,44 +745,27 @@ class CfTrackerWidget extends HTMLElement {
     return this.getAttribute('location-alert-message') || '';
   }
 
-  /* ── Arc Calculations ── */
-  _getArcPath(radius, startAngle, endAngle) {
-    const cx = 135;
-    const cy = 130;
-    const start = this._polarToCartesian(cx, cy, radius, endAngle);
-    const end = this._polarToCartesian(cx, cy, radius, startAngle);
-    const largeArcFlag = endAngle - startAngle <= 180 ? '0' : '1';
-    return `M ${start.x} ${start.y} A ${radius} ${radius} 0 ${largeArcFlag} 0 ${end.x} ${end.y}`;
-  }
-
-  _polarToCartesian(cx, cy, radius, angleDeg) {
-    const angleRad = (angleDeg - 90) * Math.PI / 180.0;
-    return {
-      x: cx + radius * Math.cos(angleRad),
-      y: cy + radius * Math.sin(angleRad)
-    };
-  }
-
   /* ── Render ── */
   render() {
     const percentage = Math.min(Math.max(this.daysLeft / this.totalDays, 0), 1);
-    const arcRadius = 127;
-    const startAngle = -180;
-    const endAngle = 0;
-    const totalArcAngle = endAngle - startAngle;
-    const fillAngle = startAngle + totalArcAngle * percentage;
 
-    const bgArcPath = this._getArcPath(arcRadius, startAngle, endAngle);
-    const fillArcPath = this._getArcPath(arcRadius, startAngle, fillAngle);
-
-    /* Calculate arc lengths for stroke-dash */
-    const fullArcLength = Math.PI * arcRadius;
-    const fillArcLength = fullArcLength * percentage;
+    /*
+     * Horizontal semicircle gauge (left → top → right).
+     * viewBox 0 0 270 134; centre (135, 130), radius 126.
+     * Stroke-width 8 → top of stroke at y ≈ 0, bottom at y ≈ 134.
+     * Path: clockwise arc (sweep-flag 1) from left endpoint to right endpoint.
+     */
+    const arcR = 126;
+    const arcCx = 135;
+    const arcCy = 130;
+    const arcPath = `M ${arcCx - arcR} ${arcCy} A ${arcR} ${arcR} 0 0 1 ${arcCx + arcR} ${arcCy}`;
+    const arcLength = Math.PI * arcR;
+    const fillLength = arcLength * percentage;
 
     this.shadowRoot.innerHTML = `
       <style>${CF_STYLES}</style>
       <div class="cf-tracker" id="cf-root">
-        ${this._currentView === 'main' ? this._renderMain(bgArcPath, fillArcPath, fullArcLength, fillArcLength) : ''}
+        ${this._currentView === 'main' ? this._renderMain(arcPath, arcLength, fillLength) : ''}
         ${this._currentView === 'reset' ? this._renderResetView() : ''}
         ${this._currentView === 'household' ? this._renderHouseholdView() : ''}
         ${this._currentView === 'stats' ? this._renderStatsView() : ''}
@@ -769,7 +776,7 @@ class CfTrackerWidget extends HTMLElement {
   }
 
   /* ── Main Tracker View ── */
-  _renderMain(bgArcPath, fillArcPath, fullArcLength, fillArcLength) {
+  _renderMain(arcPath, arcLength, fillLength) {
     const hasLocationAlert = this.locationAlertMessage || (this.zipCode && this.contaminantCount);
     const locationText = this.locationAlertMessage || `${this.zipCode}: Actively protecting from ${this.contaminantCount} contaminants in local drinking water. See What's in Your Water \u2192`;
 
@@ -783,23 +790,17 @@ class CfTrackerWidget extends HTMLElement {
         </div>
         <div class="cf-tracker__counter-wrap">
           <svg class="cf-tracker__arc-svg" viewBox="0 0 270 134" xmlns="http://www.w3.org/2000/svg">
-            <path class="cf-tracker__arc-bg"
-              d="${bgArcPath}"
-              stroke-dasharray="${fullArcLength}"
-              stroke-dashoffset="0" />
-            <path class="cf-tracker__arc-fill"
-              d="${fillArcPath}"
-              stroke-dasharray="${fillArcLength} ${fullArcLength}"
-              stroke-dashoffset="0" />
+            <path class="cf-tracker__arc-bg" d="${arcPath}" />
+            <path class="cf-tracker__arc-fill" d="${arcPath}"
+              stroke-dasharray="${arcLength}"
+              stroke-dashoffset="${arcLength - fillLength}" />
           </svg>
           <div class="cf-tracker__counter-inner">
             <span class="cf-tracker__days-number">${this.daysLeft}</span>
             <div class="cf-tracker__days-label-wrap">
               <span class="cf-tracker__days-label">DAYS LEFT of filter protection</span>
               <div class="cf-tracker__stats-link-wrap" data-action="show-stats">
-                <div class="cf-tracker__info-icon">
-                  <span class="cf-tracker__info-icon-text">i</span>
-                </div>
+                <span class="cf-tracker__info-icon">${SVG_INFO_CIRCLE}</span>
                 <button class="cf-tracker__stats-link" type="button" data-action="show-stats">My Filter Stats</button>
               </div>
             </div>
@@ -840,6 +841,9 @@ class CfTrackerWidget extends HTMLElement {
       <div class="cf-tracker__alert cf-tracker__alert--location" id="cf-location-alert">
         <div class="cf-tracker__map-pin">${SVG_MAP_PIN}</div>
         <span class="cf-tracker__alert-text">${text}</span>
+        <button class="cf-tracker__alert-close" type="button" data-action="dismiss-location-alert" aria-label="Dismiss alert">
+          ${SVG_CLOSE_SMALL}
+        </button>
       </div>
     `;
   }
@@ -995,7 +999,7 @@ class CfTrackerWidget extends HTMLElement {
   }
 
   _isDesktop() {
-    return this.offsetWidth >= 512;
+    return (this._containerWidth || this.offsetWidth) >= 512;
   }
 
   /* ── Event Binding ── */
