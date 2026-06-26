@@ -16,9 +16,6 @@
 {%- capture sharefat_svg -%}{{ 'sharefat.svg' | inline_asset_content }}{%- endcapture -%}
 {%- capture info_svg -%}{{ 'info.svg' | inline_asset_content }}{%- endcapture -%}
 
-{%- comment -%} Get the tracker background image URL from Shopify Files {%- endcomment -%}
-{%- assign tracker_bg_url = 'tracker-lockup-tracker-widget-4713913.png' | file_url -%}
-
 <style>
   /* =============================================
      (A) Recharge Affinity CSS Variable Overrides
@@ -118,222 +115,7 @@
     background-color: #D9E8F4 !important;
   }
 
-  /* --- Tracker widget --- */
-  .rc-tracker {
-    width: 354px;
-    max-width: 100%;
-    background-image: url('{{ tracker_bg_url }}');
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    border-radius: 4px;
-    padding: 20px 0;
-    text-align: center;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 20px;
-    min-height: 438px;
-    box-sizing: border-box;
-  }
-
-  .rc-tracker__title {
-    font-size: 22px;
-    line-height: 29px;
-    letter-spacing: -0.22px;
-    color: #FFFFFF;
-    font-weight: 400;
-    font-family: 'FT System', var(--font-heading--family), sans-serif;
-    text-align: center;
-    margin: 0;
-    width: 100%;
-  }
-
-  .rc-tracker__arc-container {
-    position: relative;
-    width: 270px;
-    height: 185px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .rc-tracker__arc-svg {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 270px;
-    height: 134px;
-  }
-
-  .rc-tracker__counter-wrap {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    width: 189px;
-    margin-top: 10px;
-  }
-
-  .rc-tracker__counter {
-    font-size: 84px;
-    line-height: 119px;
-    letter-spacing: -1.68px;
-    color: #FFFFFF;
-    font-weight: 400;
-    font-family: 'FT System', var(--font-heading--family), sans-serif;
-    text-align: center;
-  }
-
-  .rc-tracker__label-wrap {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    padding: 4px 0;
-  }
-
-  .rc-tracker__label {
-    font-size: 14px;
-    line-height: 20px;
-    letter-spacing: 0.56px;
-    text-transform: uppercase;
-    color: #FFFFFF;
-    font-weight: 400;
-    font-family: 'FT System Mono', 'Courier New', monospace;
-    text-align: center;
-  }
-
-  .rc-tracker__stats-link {
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    font-size: 14px;
-    line-height: 20px;
-    color: #FFFFFF;
-    text-decoration: underline;
-    text-align: center;
-    font-family: 'FT System', var(--font-body--family), sans-serif;
-    font-weight: 400;
-  }
-
-  .rc-tracker__stats-link:hover {
-    opacity: 0.85;
-  }
-
-  .rc-tracker__stats-icon {
-    display: inline-flex;
-    width: 13px;
-    height: 13px;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .rc-tracker__dates {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    width: 340px;
-    max-width: 100%;
-    padding: 0 7px;
-    box-sizing: border-box;
-  }
-
-  .rc-tracker__date {
-    font-size: 10px;
-    line-height: 14px;
-    letter-spacing: 0.4px;
-    text-transform: uppercase;
-    color: #FFFFFF;
-    font-family: 'FT System Mono', 'Courier New', monospace;
-    font-weight: 400;
-  }
-
-  .rc-tracker__date--end {
-    text-align: right;
-  }
-
-  /* --- Tracker alerts and actions --- */
-  .rc-tracker__bottom {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 20px;
-    width: 320px;
-    max-width: 100%;
-    padding: 0 17px;
-    box-sizing: border-box;
-  }
-
-  .rc-alert--filter {
-    display: flex;
-    flex-direction: row;
-    gap: 10px;
-    justify-content: flex-end;
-    align-items: flex-start;
-    border-radius: 4px;
-    padding: 11px 12px;
-    background-color: #D9E8F4;
-    width: 100%;
-    box-sizing: border-box;
-  }
-
-  .rc-alert--filter__text {
-    font-size: 10px;
-    line-height: 15px;
-    letter-spacing: 0.1px;
-    color: #202635;
-    font-family: 'FT System', var(--font-body--family), sans-serif;
-    font-weight: 400;
-    flex: 1;
-  }
-
-  .rc-alert--filter__close {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 16px;
-    height: 16px;
-    cursor: pointer;
-    background: none;
-    border: none;
-    padding: 0;
-    color: #000000;
-    flex-shrink: 0;
-  }
-
-  .rc-alert--filter__close svg {
-    width: 10px;
-    height: 10px;
-  }
-
-  .rc-tracker__actions {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    width: 100%;
-  }
-
-  .rc-tracker__action-link {
-    font-size: 14px;
-    line-height: 20px;
-    letter-spacing: -0.14px;
-    color: #FFFFFF;
-    text-decoration: underline;
-    text-align: center;
-    font-family: 'FT System', var(--font-body--family), sans-serif;
-    font-weight: 400;
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-  }
-
-  .rc-tracker__action-link:hover {
-    opacity: 0.85;
-  }
+  /* Tracker widget styles are encapsulated in the cf-tracker-widget Shadow DOM */
 
   /* --- Order status alert (green border) --- */
   .rc-alert--status {
@@ -389,10 +171,6 @@
      ============================================= */
 
   @media screen and (max-width: 767px) {
-    .rc-tracker {
-      width: 100%;
-    }
-
     .rc-alert--status__text {
       font-size: 12px;
       line-height: 16px;
@@ -593,74 +371,8 @@
   </div>
 </script>
 
-{% comment %} =============================================
-   SLOT: Overview Sidebar — Pitcher Filter Health Tracker
-   ============================================= {% endcomment %}
-<script type="text/html" data-recharge-slot="overview.sidebar">
-  <div class="rc-tracker" id="rc-tracker">
-    <h3 class="rc-tracker__title">Pitcher Filter Health</h3>
-
-    <div class="rc-tracker__arc-lockup">
-      <div class="rc-tracker__dates">
-        <span class="rc-tracker__date" id="rc-date-delivered">Delivered<br>---</span>
-        <span class="rc-tracker__date rc-tracker__date--end" id="rc-date-replace">Replace By<br>---</span>
-      </div>
-
-      <div class="rc-tracker__arc-container">
-        <svg class="rc-tracker__arc-svg" viewBox="0 0 270 134" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path
-            id="rc-arc-bg"
-            d="M10,134 A125,125 0 0,1 260,134"
-            stroke="#F2F7FB"
-            stroke-width="8"
-            stroke-linecap="round"
-            fill="none"
-            opacity="0.2"
-          />
-          <path
-            id="rc-arc-progress"
-            d="M10,134 A125,125 0 0,1 260,134"
-            stroke="#5ABE8A"
-            stroke-width="8"
-            stroke-linecap="round"
-            fill="none"
-            stroke-dasharray="393"
-            stroke-dashoffset="0"
-          />
-        </svg>
-
-        <div class="rc-tracker__counter-wrap">
-          <span class="rc-tracker__counter" id="rc-days-count">--</span>
-          <div class="rc-tracker__label-wrap">
-            <span class="rc-tracker__label">DAYS LEFT of filter protection</span>
-            <a href="#" class="rc-tracker__stats-link" id="rc-stats-link">
-              <span class="rc-tracker__stats-icon">{{ info_svg }}</span>
-              My Filter Stats
-            </a>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="rc-tracker__bottom">
-      <div class="rc-alert--filter" id="rc-filter-alert">
-        <span class="rc-alert--filter__text" id="rc-filter-alert-text">
-          According to our records, your filter was delivered on 3/21. If you did not replace on that date, you can reset your filter health below.
-        </span>
-        <button class="rc-alert--filter__close" id="rc-filter-alert-close" aria-label="Dismiss alert">
-          <svg viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M1 1L11 11M11 1L1 11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-          </svg>
-        </button>
-      </div>
-
-      <div class="rc-tracker__actions">
-        <a href="#" class="rc-tracker__action-link" id="rc-reset-filter">Reset Filter Health</a>
-        <a href="#" class="rc-tracker__action-link" id="rc-edit-household">Edit Household Size</a>
-      </div>
-    </div>
-  </div>
-</script>
+{% comment %} Sidebar tracker is now handled by the cf-tracker-widget Web Component
+   — see snippets/affinity-tracker-widget.liquid {% endcomment %}
 
 {% comment %} =============================================
    SLOT: Overview Footer — Upsell Placeholder
@@ -711,30 +423,6 @@
   };
 
   /* -------------------------------------------------
-     SVG arc calculation
-     ------------------------------------------------- */
-  function updateArcProgress(daysLeft, totalDays) {
-    const arcEl = document.getElementById('rc-arc-progress');
-    if (!arcEl) return;
-
-    const totalLength = 393; /* approximate arc length for the semicircle */
-    const pct = Math.max(0, Math.min(1, daysLeft / totalDays));
-    const offset = totalLength * (1 - pct);
-
-    arcEl.setAttribute('stroke-dasharray', String(totalLength));
-    arcEl.setAttribute('stroke-dashoffset', String(offset));
-
-    /* Color transition: green > yellow > red */
-    let strokeColor = '#5ABE8A';
-    if (pct <= 0.25) {
-      strokeColor = '#E74C3C';
-    } else if (pct <= 0.5) {
-      strokeColor = '#F5A623';
-    }
-    arcEl.setAttribute('stroke', strokeColor);
-  }
-
-  /* -------------------------------------------------
      Date formatting helpers
      ------------------------------------------------- */
   function formatShortDate(dateStr) {
@@ -745,15 +433,6 @@
     return months[d.getMonth()] + ' ' + d.getDate();
   }
 
-  function formatLongDate(dateStr) {
-    if (!dateStr) return '---';
-    const d = new Date(dateStr);
-    if (isNaN(d.getTime())) return '---';
-    const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-    return days[d.getDay()] + ', ' + months[d.getMonth()] + ' ' + d.getDate() + ', ' + d.getFullYear();
-  }
-
   function daysBetween(dateA, dateB) {
     const a = new Date(dateA);
     const b = new Date(dateB);
@@ -762,72 +441,45 @@
   }
 
   /* -------------------------------------------------
-     Tracker widget initialization
+     Tracker Web Component — feed Recharge data into
+     <cf-tracker-widget> attributes
      ------------------------------------------------- */
-  async function initTracker() {
+  async function initTrackerWidget() {
     try {
       await rcAPI.authenticate();
       const subscriptions = await rcAPI.getSubscriptions();
 
+      const widget = document.querySelector('cf-tracker-widget');
+      if (!widget) return;
+
       if (!subscriptions.length) {
-        const tracker = document.getElementById('rc-tracker');
-        if (tracker) tracker.style.display = 'none';
+        widget.style.display = 'none';
         return;
       }
 
-      /* Find the first subscription (filter product) */
       const sub = subscriptions[0];
-
-      /* Calculate days remaining */
       const today = new Date();
       const nextCharge = sub.next_charge_scheduled_at;
       const FILTER_LIFESPAN_DAYS = 30;
-      let daysLeft = 0;
 
       if (nextCharge) {
-        daysLeft = daysBetween(today, nextCharge);
-      }
-
-      /* Update counter */
-      const counterEl = document.getElementById('rc-days-count');
-      if (counterEl) {
-        counterEl.textContent = String(daysLeft);
-      }
-
-      /* Update arc */
-      updateArcProgress(daysLeft, FILTER_LIFESPAN_DAYS);
-
-      /* Update dates */
-      const deliveredEl = document.getElementById('rc-date-delivered');
-      const replaceEl = document.getElementById('rc-date-replace');
-
-      /* Estimate delivered date as nextCharge - FILTER_LIFESPAN_DAYS */
-      if (nextCharge) {
+        const daysLeft = daysBetween(today, nextCharge);
         const nextDate = new Date(nextCharge);
         const deliveredDate = new Date(nextDate);
         deliveredDate.setDate(deliveredDate.getDate() - FILTER_LIFESPAN_DAYS);
 
-        if (deliveredEl) {
-          deliveredEl.innerHTML = 'Delivered<br>' + formatShortDate(deliveredDate.toISOString());
-        }
-        if (replaceEl) {
-          replaceEl.innerHTML = 'Replace By<br>' + formatShortDate(nextCharge);
-        }
-      }
+        widget.setAttribute('days-left', String(daysLeft));
+        widget.setAttribute('total-days', String(FILTER_LIFESPAN_DAYS));
+        widget.setAttribute('delivered-date', formatShortDate(deliveredDate.toISOString()));
+        widget.setAttribute('replace-date', formatShortDate(nextCharge));
 
-      /* Update filter alert text */
-      const alertText = document.getElementById('rc-filter-alert-text');
-      if (alertText && nextCharge) {
-        const nextDate = new Date(nextCharge);
-        const deliveredDate = new Date(nextDate);
-        deliveredDate.setDate(deliveredDate.getDate() - FILTER_LIFESPAN_DAYS);
         const dMonth = deliveredDate.getMonth() + 1;
         const dDay = deliveredDate.getDate();
-        alertText.textContent = 'According to our records, your filter was delivered on ' + dMonth + '/' + dDay + '. If you did not replace on that date, you can reset your filter health below.';
+        widget.setAttribute('alert-message',
+          'According to our records, your filter was delivered on ' + dMonth + '/' + dDay + '. If you did not replace on that date, you can reset your filter health below.');
       }
-
     } catch (err) {
-      console.error('[RC Portal] Tracker init failed:', err);
+      console.error('[RC Portal] Tracker widget init failed:', err);
     }
   }
 
@@ -850,29 +502,14 @@
   }
 
   /* -------------------------------------------------
-     Alert dismiss handler
-     ------------------------------------------------- */
-  function initAlertDismiss() {
-    const closeBtn = document.getElementById('rc-filter-alert-close');
-    if (closeBtn) {
-      closeBtn.addEventListener('click', function() {
-        const alert = document.getElementById('rc-filter-alert');
-        if (alert) alert.style.display = 'none';
-      });
-    }
-  }
-
-  /* -------------------------------------------------
      Event listeners
      ------------------------------------------------- */
 
-  /* Initialize when sidebar slot mounts */
   document.addEventListener('Recharge::slot::mounted', function(event) {
     const name = event.detail && event.detail.name;
 
     if (name === 'sidebar') {
-      initTracker();
-      initAlertDismiss();
+      initTrackerWidget();
     }
 
     if (name === 'header') {
@@ -880,9 +517,8 @@
     }
   });
 
-  /* Re-initialize tracker when order changes */
   document.addEventListener('Recharge::action::orderChanged', function() {
-    initTracker();
+    initTrackerWidget();
   });
 })();
 </script>
