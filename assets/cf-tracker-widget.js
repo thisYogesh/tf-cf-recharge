@@ -302,46 +302,7 @@ const CF_STYLES = `
     padding: 0;
   }
 
-  /* ── Modal / Inline Panel ── */
-  .cf-tracker__overlay {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.25);
-    z-index: 9999;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .cf-tracker__overlay--visible {
-    display: flex;
-  }
-
-  .cf-tracker__modal {
-    display: flex;
-    flex-direction: column;
-    gap: 17px;
-    padding: 24px 0 36px 0;
-    background: var(--cf-color-background-light);
-    width: 512px;
-    max-width: 95vw;
-    max-height: 90vh;
-    overflow-y: auto;
-    border-radius: 8px;
-  }
-
-  .cf-tracker__modal-section {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    align-items: flex-end;
-    padding: 0 18px;
-  }
-
-  /* ── Inline Panel (mobile) ── */
+  /* ── Inline Panel (Stats) ── */
   .cf-tracker__inline-panel {
     display: none;
     flex-direction: column;
@@ -361,28 +322,14 @@ const CF_STYLES = `
     gap: 12px;
   }
 
-  .cf-tracker__inline-panel .cf-tracker__modal-title {
-    font-size: 22px;
-    line-height: 29px;
-    letter-spacing: -0.22px;
+  .cf-tracker__modal-section {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    align-items: flex-end;
+    padding: 0 18px;
   }
 
-  .cf-tracker__inline-panel .cf-tracker__modal-body {
-    font-size: 14px;
-    line-height: 20px;
-    letter-spacing: -0.14px;
-  }
-
-  /* Stats inline panel overrides */
-  .cf-tracker__inline-panel--stats {
-    background: var(--cf-color-background-light);
-  }
-
-  .cf-tracker__inline-panel--stats .cf-tracker__modal-section {
-    gap: 12px;
-  }
-
-  /* ── Close Button ── */
   .cf-tracker__close-btn {
     width: 24px;
     height: 24px;
@@ -401,7 +348,6 @@ const CF_STYLES = `
     height: 15px;
   }
 
-  /* ── Modal Text ── */
   .cf-tracker__text-container {
     display: flex;
     flex-direction: column;
@@ -412,121 +358,9 @@ const CF_STYLES = `
   .cf-tracker__modal-title {
     font-family: var(--cf-font-body);
     font-weight: 400;
-    font-size: 36px;
-    line-height: 47px;
-    letter-spacing: -0.36px;
-    color: var(--cf-color-foreground-dark);
-  }
-
-  .cf-tracker__modal-body {
-    font-family: var(--cf-font-body);
-    font-weight: 400;
-    font-size: 16px;
-    line-height: 22px;
-    color: var(--cf-color-label-gray);
-  }
-
-  /* ── CTA Buttons ── */
-  .cf-tracker__ctas {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    width: 100%;
-  }
-
-  .cf-tracker__cta {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    padding: 10px 24px 12px 24px;
-    border-radius: 60px;
-    font-family: var(--cf-font-body);
-    font-weight: 400;
-    font-size: 14px;
-    line-height: 20px;
-    text-align: center;
-    cursor: pointer;
-    border: none;
-    width: 100%;
-    overflow: hidden;
-  }
-
-  .cf-tracker__cta--primary {
-    background: var(--cf-color-primary);
-    color: var(--cf-color-white);
-  }
-
-  .cf-tracker__cta--secondary {
-    background: var(--cf-color-white);
-    color: var(--cf-color-foreground-dark);
-    border: 1px solid var(--cf-color-foreground-dark);
-  }
-
-  /* ── Radio Options ── */
-  .cf-tracker__radio-group {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    width: 100%;
-    padding-bottom: 4px;
-  }
-
-  .cf-tracker__radio-group-header {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-    width: 100%;
-  }
-
-  .cf-tracker__radio-option {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 12px 16px;
-    border-radius: 2px;
-    background: var(--cf-color-radio-bg);
-    border: 1px solid var(--cf-color-radio-border);
-    cursor: pointer;
-    transition: background 0.15s, border-color 0.15s;
-  }
-
-  .cf-tracker__radio-option--selected {
-    background: var(--cf-color-white);
-    border-color: var(--cf-color-foreground-dark);
-  }
-
-  .cf-tracker__radio-circle {
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    border: 1px solid var(--cf-color-foreground-dark);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    background: transparent;
-  }
-
-  .cf-tracker__radio-circle-inner {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    background: transparent;
-    transition: background 0.15s;
-  }
-
-  .cf-tracker__radio-option--selected .cf-tracker__radio-circle-inner {
-    background: var(--cf-color-foreground-dark);
-  }
-
-  .cf-tracker__radio-label {
-    font-family: var(--cf-font-body);
-    font-weight: 400;
-    font-size: 14px;
-    line-height: 20px;
-    letter-spacing: 0.14px;
-    text-align: center;
+    font-size: 22px;
+    line-height: 29px;
+    letter-spacing: -0.22px;
     color: var(--cf-color-foreground-dark);
   }
 
@@ -691,6 +525,7 @@ class CfTrackerWidget extends HTMLElement {
       this._resizeObserver.disconnect();
       this._resizeObserver = null;
     }
+    this._removePortalOverlay();
   }
 
   attributeChangedCallback() {
@@ -757,12 +592,6 @@ class CfTrackerWidget extends HTMLElement {
   render() {
     const percentage = Math.min(Math.max(this.daysLeft / this.totalDays, 0), 1);
 
-    /*
-     * Horizontal semicircle gauge (left → top → right).
-     * viewBox 0 0 270 134; centre (135, 130), radius 126.
-     * Stroke-width 8 → top of stroke at y ≈ 0, bottom at y ≈ 134.
-     * Path: clockwise arc (sweep-flag 1) from left endpoint to right endpoint.
-     */
     const arcR = 126;
     const arcCx = 135;
     const arcCy = 130;
@@ -773,17 +602,24 @@ class CfTrackerWidget extends HTMLElement {
     const bgImage = this.getAttribute('bg-image');
     const bgStyle = bgImage ? `background-image: url('${bgImage}');` : '';
 
+    const showMain = this._currentView !== 'stats';
+
     this.shadowRoot.innerHTML = `
       <style>${CF_STYLES}</style>
       <div class="cf-tracker" id="cf-root" style="${bgStyle}">
-        ${this._currentView === 'main' ? this._renderMain(arcPath, arcLength, fillLength) : ''}
-        ${this._currentView === 'reset' ? this._renderResetView() : ''}
-        ${this._currentView === 'household' ? this._renderHouseholdView() : ''}
+        ${showMain ? this._renderMain(arcPath, arcLength, fillLength) : ''}
         ${this._currentView === 'stats' ? this._renderStatsView() : ''}
       </div>
     `;
 
     this._bindEvents();
+
+    this._removePortalOverlay();
+    if (this._currentView === 'reset') {
+      this._createPortalOverlay(this._renderResetContent());
+    } else if (this._currentView === 'household') {
+      this._createPortalOverlay(this._renderHouseholdContent());
+    }
   }
 
   /* ── Main Tracker View ── */
@@ -859,38 +695,20 @@ class CfTrackerWidget extends HTMLElement {
     `;
   }
 
-  /* ── Sub-View: Reset ── */
-  _renderResetView() {
-    const isDesktop = this._isDesktop();
-    if (isDesktop) {
-      return this._renderOverlay(this._renderResetContent());
-    }
-    return this._renderInlinePanel(this._renderResetContent(), '');
-  }
-
   _renderResetContent() {
     return `
-      <button class="cf-tracker__close-btn" type="button" data-action="back" aria-label="Close">
+      <button class="cf-portal-modal__close" type="button" data-action="back" aria-label="Close">
         ${SVG_CLOSE}
       </button>
-      <div class="cf-tracker__text-container">
-        <h2 class="cf-tracker__modal-title">Reset Filter Health</h2>
-        <p class="cf-tracker__modal-body">Please confirm that you'd like to reset your Pitcher Filter Health tracker. Once confirmed, tracker will be reset to the current date. This action cannot be undone.</p>
+      <div class="cf-portal-modal__text">
+        <h2 class="cf-portal-modal__title">Reset Filter Health</h2>
+        <p class="cf-portal-modal__body">Please confirm that you'd like to reset your Pitcher Filter Health tracker. Once confirmed, tracker will be reset to the current date. This action cannot be undone.</p>
       </div>
-      <div class="cf-tracker__ctas">
-        <button class="cf-tracker__cta cf-tracker__cta--primary" type="button" data-action="confirm-reset">Yes, reset health status</button>
-        <button class="cf-tracker__cta cf-tracker__cta--secondary" type="button" data-action="back">Cancel</button>
+      <div class="cf-portal-modal__ctas">
+        <button class="cf-portal-modal__cta cf-portal-modal__cta--primary" type="button" data-action="confirm-reset">Yes, reset health status</button>
+        <button class="cf-portal-modal__cta cf-portal-modal__cta--secondary" type="button" data-action="back">Cancel</button>
       </div>
     `;
-  }
-
-  /* ── Sub-View: Household ── */
-  _renderHouseholdView() {
-    const isDesktop = this._isDesktop();
-    if (isDesktop) {
-      return this._renderOverlay(this._renderHouseholdContent());
-    }
-    return this._renderInlinePanel(this._renderHouseholdContent(), '');
   }
 
   _renderHouseholdContent() {
@@ -904,30 +722,30 @@ class CfTrackerWidget extends HTMLElement {
     const radioMarkup = options.map(opt => {
       const isSelected = this._selectedHousehold === opt.value;
       return `
-        <div class="cf-tracker__radio-option${isSelected ? ' cf-tracker__radio-option--selected' : ''}" data-action="select-household" data-value="${opt.value}">
-          <div class="cf-tracker__radio-circle">
-            <div class="cf-tracker__radio-circle-inner"></div>
+        <div class="cf-portal-modal__radio-option${isSelected ? ' cf-portal-modal__radio-option--selected' : ''}" data-action="select-household" data-value="${opt.value}">
+          <div class="cf-portal-modal__radio-circle">
+            <div class="cf-portal-modal__radio-circle-inner"></div>
           </div>
-          <span class="cf-tracker__radio-label">${opt.label}</span>
+          <span class="cf-portal-modal__radio-label">${opt.label}</span>
         </div>
       `;
     }).join('');
 
     return `
-      <button class="cf-tracker__close-btn" type="button" data-action="back" aria-label="Close">
+      <button class="cf-portal-modal__close" type="button" data-action="back" aria-label="Close">
         ${SVG_CLOSE}
       </button>
-      <div class="cf-tracker__radio-group-header">
-        <div class="cf-tracker__text-container">
-          <h2 class="cf-tracker__modal-title">Edit Household Size</h2>
+      <div class="cf-portal-modal__radio-group-header">
+        <div class="cf-portal-modal__text">
+          <h2 class="cf-portal-modal__title">Edit Household Size</h2>
         </div>
-        <div class="cf-tracker__radio-group">
+        <div class="cf-portal-modal__radio-group">
           ${radioMarkup}
         </div>
       </div>
-      <div class="cf-tracker__ctas">
-        <button class="cf-tracker__cta cf-tracker__cta--primary" type="button" data-action="save-household">Save Changes</button>
-        <button class="cf-tracker__cta cf-tracker__cta--secondary" type="button" data-action="back">Cancel</button>
+      <div class="cf-portal-modal__ctas">
+        <button class="cf-portal-modal__cta cf-portal-modal__cta--primary" type="button" data-action="save-household">Save Changes</button>
+        <button class="cf-portal-modal__cta cf-portal-modal__cta--secondary" type="button" data-action="back">Cancel</button>
       </div>
     `;
   }
@@ -986,19 +804,239 @@ class CfTrackerWidget extends HTMLElement {
     `;
   }
 
-  /* ── Layout Wrappers ── */
-  _renderOverlay(content) {
-    return `
-      <div class="cf-tracker__overlay cf-tracker__overlay--visible" data-action="overlay-close">
-        <div class="cf-tracker__modal" data-stop-propagation>
-          <div class="cf-tracker__modal-section">
-            ${content}
-          </div>
+  /* ── Portal Overlay (renders on document.body, outside Shadow DOM) ── */
+  _createPortalOverlay(content) {
+    const overlay = document.createElement('div');
+    overlay.id = 'cf-tracker-portal-overlay';
+    overlay.innerHTML = `
+      <style>
+        #cf-tracker-portal-overlay {
+          position: fixed;
+          inset: 0;
+          background: rgba(0, 0, 0, 0.25);
+          z-index: 99999;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+        .cf-portal-modal {
+          display: flex;
+          flex-direction: column;
+          gap: 17px;
+          padding: 24px 0 36px;
+          background: #F2F7FB;
+          width: 512px;
+          max-width: 95vw;
+          max-height: 90vh;
+          overflow-y: auto;
+          border-radius: 8px;
+        }
+        .cf-portal-modal__section {
+          display: flex;
+          flex-direction: column;
+          gap: 20px;
+          align-items: flex-end;
+          padding: 0 18px;
+        }
+        .cf-portal-modal__close {
+          width: 24px;
+          height: 24px;
+          cursor: pointer;
+          background: none;
+          border: none;
+          padding: 0;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          align-self: flex-end;
+        }
+        .cf-portal-modal__close svg { width: 15px; height: 15px; }
+        .cf-portal-modal__text {
+          display: flex;
+          flex-direction: column;
+          gap: 8px;
+          width: 100%;
+        }
+        .cf-portal-modal__title {
+          font-family: 'FT System', system-ui, sans-serif;
+          font-weight: 400;
+          font-size: 36px;
+          line-height: 47px;
+          letter-spacing: -0.36px;
+          color: #202635;
+          margin: 0;
+        }
+        .cf-portal-modal__body {
+          font-family: 'FT System', system-ui, sans-serif;
+          font-weight: 400;
+          font-size: 16px;
+          line-height: 22px;
+          color: #797D86;
+          margin: 0;
+        }
+        .cf-portal-modal__ctas {
+          display: flex;
+          flex-direction: column;
+          gap: 8px;
+          width: 100%;
+        }
+        .cf-portal-modal__cta {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 10px;
+          padding: 10px 24px 12px;
+          border-radius: 60px;
+          font-family: 'FT System', system-ui, sans-serif;
+          font-weight: 400;
+          font-size: 14px;
+          line-height: 20px;
+          text-align: center;
+          cursor: pointer;
+          border: none;
+          width: 100%;
+        }
+        .cf-portal-modal__cta--primary {
+          background: #2C70BB;
+          color: #FFFFFF;
+        }
+        .cf-portal-modal__cta--secondary {
+          background: #FFFFFF;
+          color: #202635;
+          border: 1px solid #202635;
+        }
+        .cf-portal-modal__radio-group-header {
+          display: flex;
+          flex-direction: column;
+          gap: 16px;
+          width: 100%;
+        }
+        .cf-portal-modal__radio-group {
+          display: flex;
+          flex-direction: column;
+          gap: 6px;
+          width: 100%;
+          padding-bottom: 4px;
+        }
+        .cf-portal-modal__radio-option {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          padding: 12px 16px;
+          border-radius: 2px;
+          background: #E6F0F8;
+          border: 1px solid #D3D8DD;
+          cursor: pointer;
+          transition: background 0.15s, border-color 0.15s;
+        }
+        .cf-portal-modal__radio-option--selected {
+          background: #FFFFFF;
+          border-color: #202635;
+        }
+        .cf-portal-modal__radio-circle {
+          width: 20px;
+          height: 20px;
+          border-radius: 50%;
+          border: 1px solid #202635;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          flex-shrink: 0;
+        }
+        .cf-portal-modal__radio-circle-inner {
+          width: 10px;
+          height: 10px;
+          border-radius: 50%;
+          background: transparent;
+          transition: background 0.15s;
+        }
+        .cf-portal-modal__radio-option--selected .cf-portal-modal__radio-circle-inner {
+          background: #202635;
+        }
+        .cf-portal-modal__radio-label {
+          font-family: 'FT System', system-ui, sans-serif;
+          font-weight: 400;
+          font-size: 14px;
+          line-height: 20px;
+          letter-spacing: 0.14px;
+          color: #202635;
+        }
+        @media (max-width: 512px) {
+          .cf-portal-modal { border-radius: 8px 8px 0 0; align-self: flex-end; max-height: 85vh; }
+          .cf-portal-modal__title { font-size: 22px; line-height: 29px; letter-spacing: -0.22px; }
+          .cf-portal-modal__body { font-size: 14px; line-height: 20px; }
+        }
+      </style>
+      <div class="cf-portal-modal" data-stop-propagation>
+        <div class="cf-portal-modal__section">
+          ${content}
         </div>
       </div>
     `;
+
+    overlay.addEventListener('click', (e) => {
+      if (e.target.closest('[data-stop-propagation]') && !e.target.closest('[data-action]')) return;
+
+      const actionEl = e.target.closest('[data-action]');
+      if (!actionEl) {
+        if (this._currentView === 'household') {
+          this._selectedHousehold = this._tempHousehold || this._selectedHousehold;
+        }
+        this._showView('main');
+        return;
+      }
+
+      const action = actionEl.getAttribute('data-action');
+      switch (action) {
+        case 'back':
+          if (this._currentView === 'household') {
+            this._selectedHousehold = this._tempHousehold || this._selectedHousehold;
+          }
+          this._showView('main');
+          break;
+
+        case 'confirm-reset':
+          this.dispatchEvent(new CustomEvent('cf-tracker:reset', {
+            bubbles: true, composed: true,
+            detail: { timestamp: new Date().toISOString() }
+          }));
+          this._showView('main');
+          break;
+
+        case 'save-household':
+          this.dispatchEvent(new CustomEvent('cf-tracker:household-change', {
+            bubbles: true, composed: true,
+            detail: { householdSize: this._selectedHousehold }
+          }));
+          this._showView('main');
+          break;
+
+        case 'select-household': {
+          const value = actionEl.getAttribute('data-value');
+          if (value) {
+            this._selectedHousehold = value;
+            const options = overlay.querySelectorAll('.cf-portal-modal__radio-option');
+            options.forEach(opt => {
+              opt.classList.toggle('cf-portal-modal__radio-option--selected', opt.getAttribute('data-value') === value);
+            });
+          }
+          break;
+        }
+      }
+    });
+
+    document.body.appendChild(overlay);
+    this._portalOverlay = overlay;
   }
 
+  _removePortalOverlay() {
+    if (this._portalOverlay) {
+      this._portalOverlay.remove();
+      this._portalOverlay = null;
+    }
+  }
+
+  /* ── Inline Panel (Stats only) ── */
   _renderInlinePanel(content, extraClass) {
     return `
       <div class="cf-tracker__inline-panel cf-tracker__inline-panel--visible${extraClass}">
@@ -1009,29 +1047,13 @@ class CfTrackerWidget extends HTMLElement {
     `;
   }
 
-  _isDesktop() {
-    return (this._containerWidth || this.offsetWidth) >= 512;
-  }
-
-  /* ── Event Binding ── */
+  /* ── Event Binding (Shadow DOM — main + stats only) ── */
   _bindEvents() {
-    const root = this.shadowRoot;
-
-    root.addEventListener('click', (e) => {
+    this.shadowRoot.addEventListener('click', (e) => {
       const target = e.target.closest('[data-action]');
-      if (!target) {
-        /* Handle overlay background click */
-        if (e.target.closest('[data-stop-propagation]')) return;
-        const overlay = e.target.closest('.cf-tracker__overlay');
-        if (overlay) {
-          this._showView('main');
-        }
-        return;
-      }
+      if (!target) return;
 
-      const action = target.getAttribute('data-action');
-
-      switch (action) {
+      switch (target.getAttribute('data-action')) {
         case 'dismiss-alert':
           this._alertDismissed = true;
           this.render();
@@ -1056,47 +1078,8 @@ class CfTrackerWidget extends HTMLElement {
           break;
 
         case 'back':
-          if (this._currentView === 'household') {
-            this._selectedHousehold = this._tempHousehold || this._selectedHousehold;
-          }
           this._showView('main');
           break;
-
-        case 'overlay-close':
-          if (!e.target.closest('[data-stop-propagation]')) {
-            if (this._currentView === 'household') {
-              this._selectedHousehold = this._tempHousehold || this._selectedHousehold;
-            }
-            this._showView('main');
-          }
-          break;
-
-        case 'confirm-reset':
-          this.dispatchEvent(new CustomEvent('cf-tracker:reset', {
-            bubbles: true,
-            composed: true,
-            detail: { timestamp: new Date().toISOString() }
-          }));
-          this._showView('main');
-          break;
-
-        case 'save-household':
-          this.dispatchEvent(new CustomEvent('cf-tracker:household-change', {
-            bubbles: true,
-            composed: true,
-            detail: { householdSize: this._selectedHousehold }
-          }));
-          this._showView('main');
-          break;
-
-        case 'select-household': {
-          const value = target.getAttribute('data-value');
-          if (value) {
-            this._selectedHousehold = value;
-            this._updateRadioSelection();
-          }
-          break;
-        }
       }
     });
   }
@@ -1104,19 +1087,6 @@ class CfTrackerWidget extends HTMLElement {
   _showView(view) {
     this._currentView = view;
     this.render();
-  }
-
-  _updateRadioSelection() {
-    const root = this.shadowRoot;
-    const options = root.querySelectorAll('.cf-tracker__radio-option');
-    options.forEach(opt => {
-      const value = opt.getAttribute('data-value');
-      if (value === this._selectedHousehold) {
-        opt.classList.add('cf-tracker__radio-option--selected');
-      } else {
-        opt.classList.remove('cf-tracker__radio-option--selected');
-      }
-    });
   }
 }
 
