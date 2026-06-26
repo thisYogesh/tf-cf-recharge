@@ -1,0 +1,25 @@
+{% comment %}
+  Pitcher Filter Health Tracker Widget — Recharge Affinity Integration
+  Loads the cf-tracker-widget.js Web Component and injects it into the
+  Affinity portal sidebar via data-recharge-slot.
+  Rendered conditionally from layout/theme.liquid when the path contains /tools/recurring.
+{% endcomment %}
+
+<script type="module">
+  import CfTrackerWidget from '{{ 'cf-tracker-widget.js' | asset_url }}';
+  if (!customElements.get('cf-tracker-widget')) {
+    customElements.define('cf-tracker-widget', CfTrackerWidget);
+  }
+</script>
+
+<script type="text/html" data-recharge-slot="*.sidebar">
+  <cf-tracker-widget
+    days-left="28"
+    total-days="30"
+    delivered-date="MAR 21"
+    replace-date="APR 21"
+    bg-image="{{ 'tracker-lockup-tracker-widget-4713913.png' | file_url }}"
+  ></cf-tracker-widget>
+</script>
+
+<script type="module" src="{{ 'recharge-slot-injector.js' | asset_url }}"></script>
