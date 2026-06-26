@@ -750,12 +750,8 @@ class CfTrackerWidget extends HTMLElement {
     `;
   }
 
-  /* ── Sub-View: Stats ── */
+  /* ── Sub-View: Stats (always inline) ── */
   _renderStatsView() {
-    const isDesktop = this._isDesktop();
-    if (isDesktop) {
-      return this._renderOverlay(this._renderStatsContent());
-    }
     return this._renderInlinePanel(this._renderStatsContent(), ' cf-tracker__inline-panel--stats');
   }
 
