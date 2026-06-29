@@ -372,7 +372,10 @@
 
   function formatDateStr(raw) {
     if (!raw) return '';
-    var cleaned = raw.replace(/^(Processing|Scheduled|Queued|Shipping)\s*/i, '').trim();
+    var cleaned = raw
+      .replace(/Your next order[:\s]*/i, '')
+      .replace(/^(Processing|Scheduled|Queued|Shipping)\s*/i, '')
+      .trim();
     var d = new Date(cleaned);
     if (isNaN(d.getTime())) return cleaned;
     return DAYS[d.getDay()] + ', ' + MONTHS[d.getMonth()] + ' ' +
@@ -440,20 +443,18 @@
   }
 
   function findDateText(card) {
-    var heading = card.querySelector('.recharge-heading, h1, h2, h3');
-    if (heading) {
-      var raw = heading.textContent.trim();
-      if (/\d{4}/.test(raw) || /\b(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\b/i.test(raw)) {
-        return raw;
-      }
-    }
+    var dateRe = /\b(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\b/i;
     var all = card.querySelectorAll('*');
     for (var i = 0; i < all.length; i++) {
+      if (all[i].children.length > 0) continue;
       var t = all[i].textContent.trim();
-      if (all[i].children.length === 0 && /\b(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\b/i.test(t) && /\d{4}/.test(t)) {
+      if (dateRe.test(t) && /\d{4}/.test(t) &&
+          t.indexOf('next order') === -1 && t.indexOf('In your order') === -1) {
         return t;
       }
     }
+    var heading = card.querySelector('.recharge-heading, h1, h2, h3');
+    if (heading) return heading.textContent.trim();
     return '';
   }
 

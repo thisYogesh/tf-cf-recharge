@@ -39,6 +39,7 @@ const CF_STYLES = `
     gap: 20px;
     padding: 20px;
     position: relative;
+    overflow: hidden;
     background-color: #1B3A5C;
     background-size: cover;
     background-position: center;
@@ -47,6 +48,22 @@ const CF_STYLES = `
     min-height: 438px;
     width: 354px;
     max-width: 100%;
+  }
+
+  .cf-tracker__bg-video {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  .cf-tracker > *:not(.cf-tracker__bg-video) {
+    position: relative;
+    z-index: 1;
   }
 
   .cf-tracker__title {
@@ -493,7 +510,7 @@ class CfTrackerWidget extends HTMLElement {
       'days-left', 'total-days', 'delivered-date', 'replace-date',
       'household-size', 'zip-code', 'contaminant-count',
       'gallons-filtered', 'days-of-protection', 'bottles-saved',
-      'alert-message', 'location-alert-message', 'bg-image'
+      'alert-message', 'location-alert-message', 'bg-image', 'bg-video'
     ];
   }
 
@@ -603,13 +620,18 @@ class CfTrackerWidget extends HTMLElement {
     const fillLength = arcLength * percentage;
 
     const bgImage = this.getAttribute('bg-image');
-    const bgStyle = bgImage ? `background-image: url('${bgImage}');` : '';
+    const bgVideo = this.getAttribute('bg-video');
+    const bgStyle = (!bgVideo && bgImage) ? `background-image: url('${bgImage}');` : '';
+    const videoHtml = bgVideo
+      ? `<video class="cf-tracker__bg-video" autoplay loop muted playsinline><source src="${bgVideo}" type="video/mp4"></video>`
+      : '';
 
     const showMain = this._currentView !== 'stats';
 
     this.shadowRoot.innerHTML = `
       <style>${CF_STYLES}</style>
       <div class="cf-tracker" id="cf-root" style="${bgStyle}">
+        ${videoHtml}
         ${showMain ? this._renderMain(arcPath, arcLength, fillLength) : ''}
         ${this._currentView === 'stats' ? this._renderStatsView() : ''}
       </div>
