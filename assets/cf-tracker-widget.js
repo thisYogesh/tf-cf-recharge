@@ -37,8 +37,9 @@ const CF_STYLES = `
     flex-direction: column;
     align-items: center;
     gap: 20px;
-    padding: 20px 0;
+    padding: 20px;
     position: relative;
+    overflow: hidden;
     background-color: #1B3A5C;
     background-size: cover;
     background-position: center;
@@ -47,6 +48,22 @@ const CF_STYLES = `
     min-height: 438px;
     width: 354px;
     max-width: 100%;
+  }
+
+  .cf-tracker__bg-video {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  .cf-tracker > *:not(.cf-tracker__bg-video) {
+    position: relative;
+    z-index: 1;
   }
 
   .cf-tracker__title {
@@ -208,6 +225,8 @@ const CF_STYLES = `
     gap: 20px;
     width: 320px;
     max-width: 100%;
+    margin-top: auto;
+    padding-top: 16px;
   }
 
   /* ── Alert Banner ── */
@@ -312,6 +331,7 @@ const CF_STYLES = `
     width: 100%;
     border-radius: 4px;
     overflow: hidden;
+    flex-grow: 1;
   }
 
   .cf-tracker__inline-panel--visible {
@@ -490,34 +510,26 @@ class CfTrackerWidget extends HTMLElement {
       'days-left', 'total-days', 'delivered-date', 'replace-date',
       'household-size', 'zip-code', 'contaminant-count',
       'gallons-filtered', 'days-of-protection', 'bottles-saved',
-      'alert-message', 'location-alert-message', 'bg-image'
+      'alert-message', 'location-alert-message', 'bg-image', 'bg-video'
     ];
   }
 
   connectedCallback() {
     this._selectedHousehold = this.getAttribute('household-size') || '2';
-    this._containerWidth = 0;
+    this._containerWidth = this.offsetWidth || 0;
 
-    /* Track container width via ResizeObserver for reliable desktop/mobile detection */
+    this.render();
+
     this._resizeObserver = new ResizeObserver((entries) => {
       for (const entry of entries) {
         const newWidth = entry.contentRect.width;
         if (this._containerWidth !== newWidth) {
           this._containerWidth = newWidth;
-          /* Re-render sub-views to switch between modal and inline layout */
-          if (this._currentView !== 'main') {
-            this.render();
-          }
+          this.render();
         }
       }
     });
     this._resizeObserver.observe(this);
-
-    /* Defer first render to ensure layout is computed */
-    requestAnimationFrame(() => {
-      this._containerWidth = this.offsetWidth;
-      this.render();
-    });
   }
 
   disconnectedCallback() {
@@ -600,7 +612,10 @@ class CfTrackerWidget extends HTMLElement {
     const fillLength = arcLength * percentage;
 
     const bgImage = this.getAttribute('bg-image');
-    const bgStyle = bgImage ? `background-image: url('${bgImage}');` : '';
+    const bgVideo = this.getAttribute('bg-video');
+    const bgStyle = (!bgVideo && bgImage) ? `background-image: url('${bgImage}');` : '';
+
+    const existingVideo = this.shadowRoot.querySelector('.cf-tracker__bg-video');
 
     const showMain = this._currentView !== 'stats';
 
@@ -611,6 +626,24 @@ class CfTrackerWidget extends HTMLElement {
         ${this._currentView === 'stats' ? this._renderStatsView() : ''}
       </div>
     `;
+
+    const root = this.shadowRoot.querySelector('#cf-root');
+    if (bgVideo && root) {
+      if (existingVideo) {
+        root.prepend(existingVideo);
+      } else {
+        const vid = document.createElement('video');
+        vid.className = 'cf-tracker__bg-video';
+        vid.autoplay = true;
+        vid.loop = true;
+        vid.muted = true;
+        vid.playsInline = true;
+        vid.setAttribute('preload', 'auto');
+        vid.src = bgVideo;
+        root.prepend(vid);
+        vid.play().catch(function() {});
+      }
+    }
 
     this._bindEvents();
 
