@@ -32,7 +32,7 @@ const CF_ORDER_SUMMARY_STYLES = `
     display: flex;
     flex-direction: column;
     gap: 20px;
-    padding: 20px 18px;
+    padding: 0 18px 20px 18px;
     max-width: 740px;
     width: 100%;
     background: var(--cf-os-color-bg);
@@ -373,7 +373,7 @@ const CF_ORDER_SUMMARY_STYLES = `
     display: flex;
     flex-direction: column;
     gap: 20px;
-    padding: 20px 18px;
+    padding: 0 18px 20px 18px;
     max-width: 740px;
     width: 100%;
     background: var(--cf-os-color-bg);
