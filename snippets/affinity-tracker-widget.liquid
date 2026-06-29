@@ -3,7 +3,30 @@
   Loads the cf-tracker-widget.js Web Component and injects it into the
   Affinity portal sidebar via data-recharge-slot.
   Rendered conditionally from layout/theme.liquid when the path contains /tools/recurring.
+
+  Injection strategy:
+  1. Primary: slot injector places the widget into Recharge's native *.sidebar slot
+  2. Fallback: if the sidebar slot never appears (Recharge sometimes omits it),
+     the fallback script below finds the portal's content column and creates
+     a sidebar layout with the widget alongside it.
 {% endcomment %}
+
+<style>
+  .cf-portal-sidebar {
+    width: 354px;
+    flex-shrink: 0;
+    position: sticky;
+    top: 24px;
+    z-index: 1;
+  }
+  @media (max-width: 999px) {
+    .cf-portal-sidebar {
+      width: 100%;
+      max-width: 354px;
+      position: static;
+    }
+  }
+</style>
 
 <script type="module">
   import CfTrackerWidget from '{{ 'cf-tracker-widget.js' | asset_url }}';
@@ -23,3 +46,80 @@
 </script>
 
 <script type="module" src="{{ 'recharge-slot-injector.js' | asset_url }}"></script>
+
+{% comment %} Fallback: inject widget when Recharge omits the sidebar slot {% endcomment %}
+<script>
+(function() {
+  'use strict';
+
+  var SIDEBAR_CLS = 'cf-portal-sidebar';
+
+  function widgetExists() {
+    var w = document.querySelector('cf-tracker-widget');
+    return w && w.offsetParent !== null;
+  }
+
+  function sidebarExists() {
+    return !!document.querySelector('.' + SIDEBAR_CLS);
+  }
+
+  function createWidget() {
+    var el = document.createElement('cf-tracker-widget');
+    el.setAttribute('days-left', '28');
+    el.setAttribute('total-days', '30');
+    el.setAttribute('delivered-date', 'MAR 21');
+    el.setAttribute('replace-date', 'APR 21');
+    el.setAttribute('bg-video', 'https://cdn.shopify.com/videos/c/o/v/6acf20f1b2664e0c86ba01e7c03cfd2d.mp4');
+    return el;
+  }
+
+  function findContentColumn() {
+    var card = document.querySelector('[data-cf-overview], .recharge-card, [class*="rc_card"]');
+    if (!card) return null;
+    return card.parentElement;
+  }
+
+  function inject() {
+    if (widgetExists() || sidebarExists()) return true;
+
+    var contentCol = findContentColumn();
+    if (!contentCol) return false;
+
+    var parent = contentCol.parentElement;
+    if (!parent) return false;
+
+    parent.style.display = 'flex';
+    parent.style.gap = '24px';
+    parent.style.alignItems = 'flex-start';
+    parent.style.flexWrap = 'wrap';
+
+    contentCol.style.flex = '1 1 600px';
+    contentCol.style.minWidth = '0';
+
+    var sidebar = document.createElement('div');
+    sidebar.className = SIDEBAR_CLS;
+    sidebar.appendChild(createWidget());
+    parent.appendChild(sidebar);
+
+    return true;
+  }
+
+  var attempts = 0;
+  function poll() {
+    if (++attempts > 40 || inject()) return;
+    setTimeout(poll, 750);
+  }
+
+  setTimeout(poll, 2000);
+
+  var tid;
+  new MutationObserver(function() {
+    clearTimeout(tid);
+    tid = setTimeout(function() {
+      if (!widgetExists() && !sidebarExists()) {
+        inject();
+      }
+    }, 600);
+  }).observe(document.body || document.documentElement, { childList: true, subtree: true });
+})();
+</script>
