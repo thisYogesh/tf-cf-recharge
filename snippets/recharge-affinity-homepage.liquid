@@ -222,6 +222,9 @@
     padding-top: 4px !important;
     margin: 0 !important;
   }
+  .cf-order-product:empty {
+    display: none !important;
+  }
 
   /* --- CTA Buttons container --- */
   [data-cf-section="ctas"] {
@@ -479,14 +482,12 @@
     var dateEl = document.createElement('p');
     dateEl.className = 'cf-order-date';
     dateEl.textContent = formatDateStr(dateText);
+    var prodEl = document.createElement('p');
+    prodEl.className = 'cf-order-product';
+    prodEl.textContent = productName || '';
     headerDiv.appendChild(labelEl);
     headerDiv.appendChild(dateEl);
-    if (productName) {
-      var prodEl = document.createElement('p');
-      prodEl.className = 'cf-order-product';
-      prodEl.textContent = productName;
-      headerDiv.appendChild(prodEl);
-    }
+    headerDiv.appendChild(prodEl);
 
     var ctaDiv = document.createElement('div');
     ctaDiv.setAttribute('data-cf-section', 'ctas');
@@ -525,7 +526,6 @@
     if (!btns.send && !btns.reschedule) return;
 
     var dateText = findDateText(card);
-    var productName = findProductName(card);
     var alertText = findAlertText(card);
 
     card.setAttribute('data-cf-overview', 'done');
@@ -538,14 +538,17 @@
     }
     card.appendChild(hidden);
 
-    var parts = buildOverlayCard(dateText, productName, alertText, btns.send, btns.reschedule);
+    var parts = buildOverlayCard(dateText, _apiProductName, alertText, btns.send, btns.reschedule);
     card.appendChild(parts.alert);
     card.appendChild(parts.header);
     card.appendChild(parts.ctas);
   }
 
+  var _apiProductName = '';
+
   function updateProductName(name) {
     if (!name) return;
+    _apiProductName = name;
     var header = document.querySelector('[data-cf-section="header"]');
     if (!header) return;
     var existing = header.querySelector('.cf-order-product');
@@ -574,12 +577,17 @@
 
   scan();
 
-  setTimeout(function() {
+  var apiRetries = 0;
+  function retryInitAPI() {
+    if (++apiRetries > 20) return;
     if (typeof recharge !== 'undefined' && recharge.auth) {
       initTrackerAndProductName();
       initWelcome();
+      return;
     }
-  }, 1000);
+    setTimeout(retryInitAPI, 1000);
+  }
+  setTimeout(retryInitAPI, 1000);
 
   var observer = new MutationObserver(function(mutations) {
     var dominated = false;
