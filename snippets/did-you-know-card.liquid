@@ -2,8 +2,10 @@
   Did You Know Educational Card — Recharge Affinity Integration
   Displays an educational card with media image, decorative video controls,
   eyebrow label, headline text, and learn more link.
-  Injected into the Affinity portal sidebar via data-recharge-slot.
-  Rendered conditionally from layout/theme.liquid when the path contains /tools/recurring.
+  Pure markup partial — rendered INSIDE the single "*.sidebar" slot template in
+  affinity-tracker-widget.liquid, just below the cf-tracker-widget. Must NOT
+  declare its own data-recharge-slot template: only one template can bind to a
+  given slot, so a second "*.sidebar" template would collide with the tracker.
 {% endcomment %}
 
 <style>
@@ -154,7 +156,6 @@
   }
 </style>
 
-<script type="text/html" data-recharge-slot="*.sidebar">
   <div class="cf-did-you-know">
     <div class="cf-did-you-know__media">
       <img
@@ -194,4 +195,3 @@
       </a>
     </div>
   </div>
-</script>
