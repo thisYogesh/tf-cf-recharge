@@ -614,25 +614,38 @@ class CfTrackerWidget extends HTMLElement {
     const bgImage = this.getAttribute('bg-image');
     const bgVideo = this.getAttribute('bg-video');
     const bgStyle = (!bgVideo && bgImage) ? `background-image: url('${bgImage}');` : '';
-    const videoHtml = bgVideo
-      ? `<video class="cf-tracker__bg-video" autoplay loop muted playsinline><source src="${bgVideo}" type="video/mp4"></video>`
-      : '';
+
+    const existingVideo = this.shadowRoot.querySelector('.cf-tracker__bg-video');
 
     const showMain = this._currentView !== 'stats';
 
     this.shadowRoot.innerHTML = `
       <style>${CF_STYLES}</style>
       <div class="cf-tracker" id="cf-root" style="${bgStyle}">
-        ${videoHtml}
         ${showMain ? this._renderMain(arcPath, arcLength, fillLength) : ''}
         ${this._currentView === 'stats' ? this._renderStatsView() : ''}
       </div>
     `;
 
-    this._bindEvents();
+    const root = this.shadowRoot.querySelector('#cf-root');
+    if (bgVideo && root) {
+      if (existingVideo) {
+        root.prepend(existingVideo);
+      } else {
+        const vid = document.createElement('video');
+        vid.className = 'cf-tracker__bg-video';
+        vid.autoplay = true;
+        vid.loop = true;
+        vid.muted = true;
+        vid.playsInline = true;
+        vid.setAttribute('preload', 'auto');
+        vid.src = bgVideo;
+        root.prepend(vid);
+        vid.play().catch(function() {});
+      }
+    }
 
-    const bgVid = this.shadowRoot.querySelector('.cf-tracker__bg-video');
-    if (bgVid) bgVid.play().catch(function() {});
+    this._bindEvents();
 
     this._removePortalOverlay();
     if (this._currentView === 'reset') {
