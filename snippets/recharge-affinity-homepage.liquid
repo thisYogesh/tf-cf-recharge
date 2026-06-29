@@ -529,15 +529,33 @@
 
     card.setAttribute('data-cf-overview', 'done');
 
-    var children = Array.from(card.children);
-    for (var i = 0; i < children.length; i++) {
-      children[i].style.display = 'none';
+    var hidden = document.createElement('div');
+    hidden.setAttribute('data-cf-section', 'original');
+    hidden.style.cssText = 'display:none!important;position:absolute!important;width:0!important;height:0!important;overflow:hidden!important;pointer-events:none!important;';
+    while (card.firstChild) {
+      hidden.appendChild(card.firstChild);
     }
+    card.appendChild(hidden);
 
     var parts = buildOverlayCard(dateText, productName, alertText, btns.send, btns.reschedule);
     card.appendChild(parts.alert);
     card.appendChild(parts.header);
     card.appendChild(parts.ctas);
+  }
+
+  function updateProductName(name) {
+    if (!name) return;
+    var header = document.querySelector('[data-cf-section="header"]');
+    if (!header) return;
+    var existing = header.querySelector('.cf-order-product');
+    if (existing) {
+      existing.textContent = name;
+    } else {
+      var el = document.createElement('p');
+      el.className = 'cf-order-product';
+      el.textContent = name;
+      header.appendChild(el);
+    }
   }
 
   function scan() {
@@ -598,15 +616,20 @@
     return Math.max(0, Math.ceil((db - da) / 86400000));
   }
 
-  function initTrackerWidget() {
+  function initTrackerAndProductName() {
     rcAPI.authenticate().then(function() {
       return rcAPI.getSubscriptions();
     }).then(function(subs) {
-      var widget = document.querySelector('cf-tracker-widget');
-      if (!widget) return;
-      if (!subs.length) { widget.style.display = 'none'; return; }
+      if (!subs.length) return;
 
       var sub = subs[0];
+
+      var prodTitle = sub.product_title || '';
+      if (prodTitle) updateProductName(prodTitle);
+
+      var widget = document.querySelector('cf-tracker-widget');
+      if (!widget) return;
+
       var today = new Date();
       var nextCharge = sub.next_charge_scheduled_at;
       var LIFESPAN = 30;
@@ -645,12 +668,14 @@
 
   document.addEventListener('Recharge::slot::mounted', function(event) {
     var name = event.detail && event.detail.name;
-    if (name === 'sidebar') initTrackerWidget();
-    if (name === 'header') initWelcome();
+    if (name === 'sidebar' || name === 'header') {
+      initTrackerAndProductName();
+      if (name === 'header') initWelcome();
+    }
   });
 
   document.addEventListener('Recharge::action::orderChanged', function() {
-    initTrackerWidget();
+    initTrackerAndProductName();
     var cards = document.querySelectorAll('[data-cf-overview="done"]');
     cards.forEach(function(c) { c.removeAttribute('data-cf-overview'); });
     debouncedScan();

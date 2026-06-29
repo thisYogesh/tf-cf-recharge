@@ -639,6 +639,9 @@ class CfTrackerWidget extends HTMLElement {
 
     this._bindEvents();
 
+    const bgVid = this.shadowRoot.querySelector('.cf-tracker__bg-video');
+    if (bgVid) bgVid.play().catch(function() {});
+
     this._removePortalOverlay();
     if (this._currentView === 'reset') {
       this._createPortalOverlay(this._renderResetContent());
