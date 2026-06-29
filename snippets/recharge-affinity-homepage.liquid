@@ -693,10 +693,12 @@
   }
 
   document.addEventListener('Recharge::slot::mounted', function(event) {
-    var name = event.detail && event.detail.name;
-    if (name === 'sidebar' || name === 'header') {
-      initTrackerAndProductName();
-      if (name === 'header') initWelcome();
+    const name = event.detail && event.detail.name;
+    if (name === 'sidebar') {
+      initTrackerWidget();
+    }
+    if (name === 'header') {
+      initWelcome();
     }
   });
 
