@@ -47,10 +47,21 @@
 
 <script type="module" src="{{ 'recharge-slot-injector.js' | asset_url }}"></script>
 
-{% comment %} Fallback: ensure widget lands in the portal's sidebar column {% endcomment %}
+{% comment %} Fallback: inject widget when Recharge omits the sidebar slot {% endcomment %}
 <script>
 (function() {
   'use strict';
+
+  var SIDEBAR_CLS = 'cf-portal-sidebar';
+
+  function widgetExists() {
+    var w = document.querySelector('cf-tracker-widget');
+    return w && w.offsetParent !== null;
+  }
+
+  function sidebarExists() {
+    return !!document.querySelector('.' + SIDEBAR_CLS);
+  }
 
   function createWidget() {
     var el = document.createElement('cf-tracker-widget');
@@ -62,63 +73,51 @@
     return el;
   }
 
-  function findSidebar() {
+  function findContentColumn() {
     var card = document.querySelector('[data-cf-overview], .recharge-card, [class*="rc_card"]');
     if (!card) return null;
-
-    var el = card;
-    for (var d = 0; d < 10; d++) {
-      el = el.parentElement;
-      if (!el || el === document.body) break;
-
-      var cs = window.getComputedStyle(el);
-      var display = cs.display;
-      var isHorizontal =
-        ((display === 'flex' || display === 'inline-flex') && cs.flexDirection !== 'column') ||
-        (display === 'grid' || display === 'inline-grid');
-
-      if (isHorizontal && el.children.length >= 2) {
-        for (var i = 0; i < el.children.length; i++) {
-          var child = el.children[i];
-          if (!child.contains(card)) return child;
-        }
-      }
-    }
-    return null;
+    return card.parentElement;
   }
 
-  function ensureWidget() {
-    var sidebar = findSidebar();
-    if (!sidebar) return false;
+  function inject() {
+    if (widgetExists() || sidebarExists()) return true;
 
-    var existing = document.querySelector('cf-tracker-widget');
+    var contentCol = findContentColumn();
+    if (!contentCol) return false;
 
-    if (existing && sidebar.contains(existing)) return true;
+    var parent = contentCol.parentElement;
+    if (!parent) return false;
 
-    if (existing) {
-      sidebar.prepend(existing);
-      return true;
-    }
+    parent.style.display = 'flex';
+    parent.style.gap = '24px';
+    parent.style.alignItems = 'flex-start';
+    parent.style.flexWrap = 'wrap';
 
-    sidebar.prepend(createWidget());
+    contentCol.style.flex = '1 1 600px';
+    contentCol.style.minWidth = '0';
+
+    var sidebar = document.createElement('div');
+    sidebar.className = SIDEBAR_CLS;
+    sidebar.appendChild(createWidget());
+    parent.appendChild(sidebar);
+
     return true;
   }
 
   var attempts = 0;
   function poll() {
-    if (++attempts > 40 || ensureWidget()) return;
+    if (++attempts > 40 || inject()) return;
     setTimeout(poll, 750);
   }
+
   setTimeout(poll, 2000);
 
   var tid;
   new MutationObserver(function() {
     clearTimeout(tid);
     tid = setTimeout(function() {
-      var w = document.querySelector('cf-tracker-widget');
-      var sidebar = findSidebar();
-      if (sidebar && (!w || !sidebar.contains(w))) {
-        ensureWidget();
+      if (!widgetExists() && !sidebarExists()) {
+        inject();
       }
     }, 600);
   }).observe(document.body || document.documentElement, { childList: true, subtree: true });
