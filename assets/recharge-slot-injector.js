@@ -33,7 +33,7 @@
     );
 
     targets.forEach(function (el) {
-      if (el._rcSlotInjected) return;
+      if (el._rcSlotInjected && el.children.length > 0) return;
 
       var name =
         el.getAttribute('data-slot') ||

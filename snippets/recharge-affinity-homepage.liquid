@@ -426,7 +426,7 @@
     var links = section.querySelectorAll('a, [class*="title"], [class*="name"], [class*="product"]');
     for (var i = 0; i < links.length; i++) {
       var t = links[i].textContent.trim();
-      if (t && t !== 'In your order' && t !== 'Edit' && t.length > 2 && t.indexOf('$') === -1 && t.indexOf('Every') === -1) {
+      if (t && t !== 'In your order' && t !== 'Edit' && t.length > 2 && t.indexOf('$') === -1 && t.indexOf('Every') === -1 && t.toLowerCase().indexOf('next order') === -1) {
         return t;
       }
     }
@@ -435,7 +435,8 @@
       var t = spans[i].textContent.trim();
       if (t && t !== 'In your order' && t !== 'Edit' && t.length > 3 &&
           t.indexOf('$') === -1 && t.indexOf('Every') === -1 &&
-          t.indexOf('saving') === -1 && spans[i].children.length === 0) {
+          t.indexOf('saving') === -1 && t.toLowerCase().indexOf('next order') === -1 &&
+          spans[i].children.length === 0) {
         return t;
       }
     }
@@ -572,6 +573,13 @@
   }
 
   scan();
+
+  setTimeout(function() {
+    if (typeof recharge !== 'undefined' && recharge.auth) {
+      initTrackerAndProductName();
+      initWelcome();
+    }
+  }, 1000);
 
   var observer = new MutationObserver(function(mutations) {
     var dominated = false;

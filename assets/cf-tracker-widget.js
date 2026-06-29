@@ -516,28 +516,20 @@ class CfTrackerWidget extends HTMLElement {
 
   connectedCallback() {
     this._selectedHousehold = this.getAttribute('household-size') || '2';
-    this._containerWidth = 0;
+    this._containerWidth = this.offsetWidth || 0;
 
-    /* Track container width via ResizeObserver for reliable desktop/mobile detection */
+    this.render();
+
     this._resizeObserver = new ResizeObserver((entries) => {
       for (const entry of entries) {
         const newWidth = entry.contentRect.width;
         if (this._containerWidth !== newWidth) {
           this._containerWidth = newWidth;
-          /* Re-render sub-views to switch between modal and inline layout */
-          if (this._currentView !== 'main') {
-            this.render();
-          }
+          this.render();
         }
       }
     });
     this._resizeObserver.observe(this);
-
-    /* Defer first render to ensure layout is computed */
-    requestAnimationFrame(() => {
-      this._containerWidth = this.offsetWidth;
-      this.render();
-    });
   }
 
   disconnectedCallback() {
