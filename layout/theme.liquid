@@ -142,6 +142,7 @@
     {% endif %}
 
     {% if request.path contains '/tools/recurring' %}
+      {% render 'affinity-order-summary' %}
       {% render 'recharge-affinity-homepage' %}
       {% render 'affinity-tracker-widget' %}
     {% endif %}

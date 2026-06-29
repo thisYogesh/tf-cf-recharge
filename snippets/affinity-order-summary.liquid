@@ -1,0 +1,25 @@
+{% comment %}
+  Order Summary Widget — Recharge Affinity Integration
+  Loads the cf-order-summary-widget.js Web Component and injects it into the
+  Affinity portal overview footer via data-recharge-slot.
+  Rendered conditionally from layout/theme.liquid when the path contains /tools/recurring.
+{% endcomment %}
+
+<style>
+  .cf-order-summary-slot {
+    margin-bottom: 16px;
+  }
+</style>
+
+<script type="module">
+  import CfOrderSummaryWidget from '{{ 'cf-order-summary-widget.js' | asset_url }}';
+  if (!customElements.get('cf-order-summary-widget')) {
+    customElements.define('cf-order-summary-widget', CfOrderSummaryWidget);
+  }
+</script>
+
+<script type="text/html" data-recharge-slot="overview.footer">
+  <div class="cf-order-summary-slot">
+    <cf-order-summary-widget></cf-order-summary-widget>
+  </div>
+</script>
