@@ -37,7 +37,7 @@ const CF_STYLES = `
     flex-direction: column;
     align-items: center;
     gap: 20px;
-    padding: 20px 0;
+    padding: 20px;
     position: relative;
     background-color: #1B3A5C;
     background-size: cover;
@@ -208,6 +208,8 @@ const CF_STYLES = `
     gap: 20px;
     width: 320px;
     max-width: 100%;
+    margin-top: auto;
+    padding-top: 16px;
   }
 
   /* ── Alert Banner ── */
@@ -312,6 +314,7 @@ const CF_STYLES = `
     width: 100%;
     border-radius: 4px;
     overflow: hidden;
+    flex-grow: 1;
   }
 
   .cf-tracker__inline-panel--visible {
