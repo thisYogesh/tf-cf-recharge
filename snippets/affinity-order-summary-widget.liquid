@@ -1,21 +1,329 @@
 {% comment %}
-  Order Summary Widget — Recharge Affinity Integration
-  Loads the cf-order-summary-widget.js Web Component and injects it into the
-  Affinity portal overview header via data-recharge-slot.
-  Rendered conditionally from layout/theme.liquid when the path contains /tools/recurring.
-
-  The widget authenticates with the Recharge Storefront SDK (already initialized
-  by recharge-affinity-homepage.liquid), fetches subscription, address, and payment
-  data, then renders the order summary card.
+  Order Summary Overrides — Recharge Affinity Portal
+  ====================================================
+  Pure CSS overrides that restyle the Recharge portal's built-in
+  Order Summary section to match the Figma design (471:4305 / 615:5650).
+  No custom web component — just CSS targeting Recharge's own DOM.
 {% endcomment %}
 
-<script type="module">
-  import CfOrderSummaryWidget from '{{ 'cf-order-summary-widget.js' | asset_url }}';
-  if (!customElements.get('cf-order-summary-widget')) {
-    customElements.define('cf-order-summary-widget', CfOrderSummaryWidget);
-  }
-</script>
+<style>
+  /* ===================================================
+     Order Summary Card — Typography & Layout Overrides
+     =================================================== */
 
-<script type="text/html" data-recharge-slot="overview.header">
-  <cf-order-summary-widget></cf-order-summary-widget>
-</script>
+  /* All headings inside the portal */
+  .recharge-theme h1,
+  .recharge-theme h2,
+  .recharge-theme h3,
+  .recharge-theme h4,
+  .recharge-theme h5,
+  .recharge-theme h6 {
+    font-family: 'FT System', var(--font-heading--family), system-ui, sans-serif !important;
+    font-weight: 400 !important;
+    color: #202635 !important;
+  }
+
+  /* Section headings like "Order summary", "In your order", "Delivery Address" */
+  .recharge-theme .recharge-heading,
+  .recharge-theme [class*="heading"],
+  .recharge-theme [class*="Heading"] {
+    font-family: 'FT System', var(--font-heading--family), system-ui, sans-serif !important;
+    font-weight: 400 !important;
+    font-size: 20px !important;
+    line-height: 1.3 !important;
+    letter-spacing: -0.2px !important;
+    color: #202635 !important;
+  }
+
+  /* Body text inside portal */
+  .recharge-theme .recharge-text,
+  .recharge-theme p,
+  .recharge-theme span,
+  .recharge-theme label,
+  .recharge-theme div {
+    font-family: 'FT System', var(--font-body--family), system-ui, sans-serif !important;
+  }
+
+  /* ===================================================
+     Order Summary — Line Items (Subtotal, Discounts, etc.)
+     =================================================== */
+
+  /* Summary line rows (Subtotal, Discounts, Shipping, Taxes, etc.) */
+  .recharge-theme [class*="summary"] [class*="row"],
+  .recharge-theme [class*="summary"] [class*="line"],
+  .recharge-theme [class*="Summary"] [class*="row"],
+  .recharge-theme [class*="Summary"] [class*="line"],
+  .recharge-theme [class*="order-summary"] [class*="row"],
+  .recharge-theme [class*="order_summary"] [class*="row"] {
+    font-family: 'FT System', var(--font-body--family), system-ui, sans-serif !important;
+    font-size: 16px !important;
+    line-height: 1.4 !important;
+    color: #202635 !important;
+    font-weight: 400 !important;
+  }
+
+  /* Total row — slightly larger */
+  .recharge-theme [class*="summary"] [class*="total"],
+  .recharge-theme [class*="Summary"] [class*="total"],
+  .recharge-theme [class*="Summary"] [class*="Total"],
+  .recharge-theme [class*="order-summary"] [class*="total"],
+  .recharge-theme [class*="order_summary"] [class*="total"] {
+    font-family: 'FT System', var(--font-body--family), system-ui, sans-serif !important;
+    font-size: 18px !important;
+    line-height: 1.4 !important;
+    color: #202635 !important;
+    font-weight: 400 !important;
+  }
+
+  /* ===================================================
+     Card Container Overrides
+     =================================================== */
+  .recharge-theme .recharge-card,
+  .recharge-theme [class*="rc_card"],
+  .recharge-theme [class*="rc-card"] {
+    border: 1px solid #D9E8F4 !important;
+    border-radius: 4px !important;
+    background: #FFFFFF !important;
+    box-shadow: none !important;
+    padding: 0 18px 20px 18px !important;
+  }
+
+  /* ===================================================
+     Links — Primary Blue, Underlined
+     =================================================== */
+  .recharge-theme a,
+  .recharge-theme [class*="link"],
+  .recharge-theme [class*="Link"] {
+    color: #2C70BB !important;
+    text-decoration: underline !important;
+    font-family: 'FT System', var(--font-body--family), system-ui, sans-serif !important;
+    font-weight: 400 !important;
+    font-size: 16px !important;
+    line-height: normal !important;
+  }
+
+  .recharge-theme a:hover,
+  .recharge-theme [class*="link"]:hover {
+    opacity: 0.8 !important;
+  }
+
+  /* ===================================================
+     Pill Buttons (Edit, Apply)
+     =================================================== */
+  .recharge-theme [class*="edit-btn"],
+  .recharge-theme [class*="edit_btn"],
+  .recharge-theme button[class*="pill"],
+  .recharge-theme button[class*="outline"],
+  .recharge-theme [class*="secondary-btn"],
+  .recharge-theme [class*="secondary_btn"] {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 6px 20px 8px 20px !important;
+    border-radius: 42px !important;
+    border: 1px solid #202635 !important;
+    background: #FFFFFF !important;
+    font-family: 'FT System', var(--font-body--family), system-ui, sans-serif !important;
+    font-weight: 400 !important;
+    font-size: 14px !important;
+    line-height: 20px !important;
+    color: #202635 !important;
+    cursor: pointer !important;
+    white-space: nowrap !important;
+  }
+
+  .recharge-theme [class*="edit-btn"]:hover,
+  .recharge-theme [class*="edit_btn"]:hover,
+  .recharge-theme button[class*="pill"]:hover,
+  .recharge-theme button[class*="outline"]:hover {
+    background: #F2F7FB !important;
+  }
+
+  /* ===================================================
+     Promo / Discount Code Input
+     =================================================== */
+  .recharge-theme input[type="text"][class*="promo"],
+  .recharge-theme input[type="text"][class*="discount"],
+  .recharge-theme input[type="text"][class*="coupon"],
+  .recharge-theme input[placeholder*="promo" i],
+  .recharge-theme input[placeholder*="discount" i],
+  .recharge-theme input[placeholder*="code" i] {
+    max-width: 255px !important;
+    height: 34px !important;
+    padding: 0 12px !important;
+    border-radius: 6px !important;
+    border: 1px solid #D3D8DD !important;
+    background: #FFFFFF !important;
+    font-family: 'FT System', var(--font-body--family), system-ui, sans-serif !important;
+    font-weight: 400 !important;
+    font-size: 14px !important;
+    line-height: 21px !important;
+    color: #202635 !important;
+    outline: none !important;
+  }
+
+  .recharge-theme input[type="text"][class*="promo"]:focus,
+  .recharge-theme input[type="text"][class*="discount"]:focus,
+  .recharge-theme input[placeholder*="promo" i]:focus,
+  .recharge-theme input[placeholder*="discount" i]:focus,
+  .recharge-theme input[placeholder*="code" i]:focus {
+    border-color: #2C70BB !important;
+  }
+
+  /* ===================================================
+     Product Items — "In your order" Section
+     =================================================== */
+  .recharge-theme [class*="product-title"],
+  .recharge-theme [class*="product_title"],
+  .recharge-theme [class*="productTitle"],
+  .recharge-theme [class*="item-title"],
+  .recharge-theme [class*="item_title"] {
+    font-family: 'FT System', var(--font-body--family), system-ui, sans-serif !important;
+    font-weight: 400 !important;
+    font-size: 18px !important;
+    line-height: 1.4 !important;
+    color: #24293B !important;
+  }
+
+  .recharge-theme [class*="product-price"],
+  .recharge-theme [class*="product_price"],
+  .recharge-theme [class*="productPrice"],
+  .recharge-theme [class*="item-price"],
+  .recharge-theme [class*="item_price"] {
+    font-family: 'FT System', var(--font-body--family), system-ui, sans-serif !important;
+    font-weight: 400 !important;
+    font-size: 16px !important;
+    line-height: 1.4 !important;
+    color: #202635 !important;
+  }
+
+  /* Quantity badge on product images */
+  .recharge-theme [class*="quantity"],
+  .recharge-theme [class*="qty-badge"],
+  .recharge-theme [class*="qty_badge"] {
+    background: #202635 !important;
+    color: #FFFFFF !important;
+    border-radius: 50% !important;
+    font-family: 'FT System', var(--font-body--family), system-ui, sans-serif !important;
+    font-size: 14.95px !important;
+    letter-spacing: 0.6px !important;
+    text-transform: uppercase !important;
+  }
+
+  /* ===================================================
+     Delivery Address & Payment
+     =================================================== */
+  .recharge-theme [class*="address"],
+  .recharge-theme [class*="payment"],
+  .recharge-theme [class*="delivery"] {
+    font-family: 'FT System', var(--font-body--family), system-ui, sans-serif !important;
+  }
+
+  /* Bold address / payment text */
+  .recharge-theme [class*="address"] strong,
+  .recharge-theme [class*="payment"] strong,
+  .recharge-theme [class*="delivery"] strong {
+    font-weight: 600 !important;
+    letter-spacing: -0.16px !important;
+    color: #202635 !important;
+  }
+
+  /* ===================================================
+     Info Icon — Styled Circle with "i"
+     =================================================== */
+  .recharge-theme [class*="info-icon"],
+  .recharge-theme [class*="info_icon"],
+  .recharge-theme [class*="tooltip-trigger"],
+  .recharge-theme [class*="tooltip_trigger"] {
+    color: #2C70BB !important;
+  }
+
+  /* ===================================================
+     Expandable / Accordion Sections (Discounts breakdown)
+     =================================================== */
+  .recharge-theme [class*="expand"],
+  .recharge-theme [class*="accordion"],
+  .recharge-theme [class*="collapsible"],
+  .recharge-theme details {
+    border: none !important;
+  }
+
+  .recharge-theme [class*="expand"] summary,
+  .recharge-theme details summary {
+    font-family: 'FT System', var(--font-body--family), system-ui, sans-serif !important;
+    font-size: 16px !important;
+    color: #202635 !important;
+    cursor: pointer !important;
+  }
+
+  /* ===================================================
+     Responsive — Mobile Overrides (< 768px)
+     =================================================== */
+  @media screen and (max-width: 767px) {
+    .recharge-theme .recharge-heading,
+    .recharge-theme [class*="heading"],
+    .recharge-theme [class*="Heading"] {
+      font-size: 16px !important;
+      line-height: 1.3 !important;
+      letter-spacing: -0.16px !important;
+    }
+
+    .recharge-theme [class*="product-title"],
+    .recharge-theme [class*="product_title"],
+    .recharge-theme [class*="productTitle"],
+    .recharge-theme [class*="item-title"],
+    .recharge-theme [class*="item_title"] {
+      font-size: 14px !important;
+      line-height: 1.4 !important;
+      letter-spacing: 0.14px !important;
+    }
+
+    .recharge-theme [class*="product-price"],
+    .recharge-theme [class*="product_price"],
+    .recharge-theme [class*="productPrice"],
+    .recharge-theme [class*="item-price"],
+    .recharge-theme [class*="item_price"] {
+      font-size: 12px !important;
+      line-height: 1.4 !important;
+      letter-spacing: 0.12px !important;
+    }
+
+    .recharge-theme [class*="summary"] [class*="row"],
+    .recharge-theme [class*="summary"] [class*="line"],
+    .recharge-theme [class*="Summary"] [class*="row"],
+    .recharge-theme [class*="Summary"] [class*="line"],
+    .recharge-theme [class*="order-summary"] [class*="row"],
+    .recharge-theme [class*="order_summary"] [class*="row"] {
+      font-size: 12px !important;
+      line-height: 1.4 !important;
+      letter-spacing: 0.12px !important;
+    }
+
+    .recharge-theme [class*="summary"] [class*="total"],
+    .recharge-theme [class*="Summary"] [class*="total"],
+    .recharge-theme [class*="Summary"] [class*="Total"],
+    .recharge-theme [class*="order-summary"] [class*="total"],
+    .recharge-theme [class*="order_summary"] [class*="total"] {
+      font-size: 14px !important;
+      line-height: 1.4 !important;
+      letter-spacing: -0.14px !important;
+    }
+
+    .recharge-theme a,
+    .recharge-theme [class*="link"],
+    .recharge-theme [class*="Link"] {
+      font-size: 14px !important;
+      line-height: 1.4 !important;
+    }
+
+    .recharge-theme input[placeholder*="promo" i],
+    .recharge-theme input[placeholder*="discount" i],
+    .recharge-theme input[placeholder*="code" i] {
+      max-width: 100% !important;
+      flex: 1 !important;
+      font-size: 10px !important;
+      line-height: 1.5 !important;
+      letter-spacing: 0.1px !important;
+    }
+  }
+</style>
