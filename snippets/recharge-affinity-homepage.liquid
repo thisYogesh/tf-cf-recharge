@@ -421,6 +421,22 @@
     return { send: send, reschedule: reschedule };
   }
 
+  var STATUS_RE = /^(Processing|Scheduled|Queued|Shipping|Delivered|Pending|Cancelled|Skipped)\b/i;
+  var DATE_RE = /\b(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\b.*\d{4}/i;
+
+  function isProductText(t) {
+    if (!t || t.length < 3) return false;
+    if (t === 'In your order' || t === 'Edit') return false;
+    if (t.indexOf('$') !== -1) return false;
+    if (t.indexOf('Every') !== -1) return false;
+    if (t.indexOf('saving') !== -1) return false;
+    if (t.toLowerCase().indexOf('next order') !== -1) return false;
+    if (STATUS_RE.test(t)) return false;
+    if (DATE_RE.test(t)) return false;
+    if (/^\d+$/.test(t)) return false;
+    return true;
+  }
+
   function findProductName(card) {
     var itemsEl = findByText(card, 'In your order');
     if (!itemsEl) return '';
@@ -429,19 +445,12 @@
     var links = section.querySelectorAll('a, [class*="title"], [class*="name"], [class*="product"]');
     for (var i = 0; i < links.length; i++) {
       var t = links[i].textContent.trim();
-      if (t && t !== 'In your order' && t !== 'Edit' && t.length > 2 && t.indexOf('$') === -1 && t.indexOf('Every') === -1 && t.toLowerCase().indexOf('next order') === -1) {
-        return t;
-      }
+      if (isProductText(t)) return t;
     }
     var spans = section.querySelectorAll('span, p, div');
     for (var i = 0; i < spans.length; i++) {
       var t = spans[i].textContent.trim();
-      if (t && t !== 'In your order' && t !== 'Edit' && t.length > 3 &&
-          t.indexOf('$') === -1 && t.indexOf('Every') === -1 &&
-          t.indexOf('saving') === -1 && t.toLowerCase().indexOf('next order') === -1 &&
-          spans[i].children.length === 0) {
-        return t;
-      }
+      if (isProductText(t) && spans[i].children.length === 0) return t;
     }
     return '';
   }
@@ -526,6 +535,7 @@
     if (!btns.send && !btns.reschedule) return;
 
     var dateText = findDateText(card);
+    var productName = _apiProductName || findProductName(card);
     var alertText = findAlertText(card);
 
     card.setAttribute('data-cf-overview', 'done');
@@ -538,7 +548,7 @@
     }
     card.appendChild(hidden);
 
-    var parts = buildOverlayCard(dateText, _apiProductName, alertText, btns.send, btns.reschedule);
+    var parts = buildOverlayCard(dateText, productName, alertText, btns.send, btns.reschedule);
     card.appendChild(parts.alert);
     card.appendChild(parts.header);
     card.appendChild(parts.ctas);
