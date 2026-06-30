@@ -106,13 +106,20 @@
     background: none !important;
     border-radius: 0 !important;
     box-shadow: none !important;
-    padding: 0 8px 20px 18px !important;
-    margin-bottom: 0 !important;
+    padding: 0 8px 0 18px !important;
+    margin: 0 !important;
   }
 
-  /* 1px gap between stacked cards */
+  /* No gap between stacked cards — overlap borders to a single 1px divider */
   body.cf-page-subscriptions .recharge-card + .recharge-card {
-    margin-top: 1px !important;
+    margin-top: -1px !important;
+  }
+
+  /* Zero any flex/grid gap on the container(s) holding the cards/items
+     (Figma 767:13159 — items are flush, no spacing) */
+  body.cf-page-subscriptions :has(> .recharge-card),
+  body.cf-page-subscriptions :has(> .recharge-component-subscription-item) {
+    gap: 0 !important;
   }
 
   /* ===================================================
@@ -136,9 +143,9 @@
     width: 100% !important;
   }
 
-  /* 1px divider between stacked items */
+  /* No gap between stacked items — overlap borders to a single 1px divider */
   body.cf-page-subscriptions .recharge-component-subscription-item + .recharge-component-subscription-item {
-    margin-top: 1px !important;
+    margin-top: -1px !important;
   }
 
   /* Text lockup (title + price + frequency) — takes remaining width so the

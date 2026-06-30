@@ -358,6 +358,54 @@
   }
 </style>
 
+{% comment %} =============================================
+   Remove the Recharge "Back" button on ALL portal routes.
+   It is a native element with no stable class, so match links/buttons
+   whose accessible label is "Back" (ignoring a leading arrow glyph) and
+   hide them. Idempotent + MutationObserver for the SPA.
+   ============================================= {% endcomment %}
+<script>
+(function () {
+  'use strict';
+
+  /* Strip leading back-arrow glyphs (←, ‹, ❮, <, ⬅, etc.) and whitespace */
+  function labelOf(el) {
+    var t = (el.getAttribute('aria-label') || el.textContent || '')
+      .replace(/\s+/g, ' ')
+      .trim()
+      .replace(/^[←‹❮⬅️<«‹\s]+/, '')
+      .trim();
+    return t;
+  }
+
+  function hideBackButtons() {
+    var nodes = document.querySelectorAll(
+      '.recharge-theme a, .recharge-theme button, .recharge-theme [role="button"]'
+    );
+    for (var i = 0; i < nodes.length; i++) {
+      var el = nodes[i];
+      if (el.getAttribute('data-cf-back-hidden')) continue;
+      if (/^back$/i.test(labelOf(el))) {
+        el.style.setProperty('display', 'none', 'important');
+        el.setAttribute('data-cf-back-hidden', '1');
+      }
+    }
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', hideBackButtons);
+  } else {
+    hideBackButtons();
+  }
+
+  var backObserver = new MutationObserver(function () { hideBackButtons(); });
+  backObserver.observe(document.body || document.documentElement, {
+    childList: true,
+    subtree: true
+  });
+})();
+</script>
+
 {% comment %} SLOT: Global Header — Welcome + Navigation Tabs {% endcomment %}
 <script type="text/html" data-recharge-slot="*.header">
   <div class="rc-header-slot">
