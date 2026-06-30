@@ -44,20 +44,28 @@
   }
 
   /* ===================================================
-     Subscriptions Page — Tabs (bottom-border style)
-     Overrides the global pill-tab CSS from homepage snippet
+     Subscriptions Page — Active/Inactive status tabs (bottom-border style)
+     ----------------------------------------------------
+     IMPORTANT: This must ONLY restyle the in-content "Active / Inactive"
+     status filter — NOT the persistent top portal navigation
+     (Dashboard / My Products / Upcoming orders / …). The top nav is a
+     [role="tablist"] whose tabs carry data-testid="portal-nav-item-*" and
+     class "recharge-tab-navigation-item"; those pills must keep the global
+     pill style so the navigation looks identical across all routes
+     (matching /overview). We therefore exclude the navigation tablist/tabs
+     from every selector below.
      =================================================== */
-  body.cf-page-subscriptions .recharge-theme [role="tablist"] {
+  body.cf-page-subscriptions .recharge-theme [role="tablist"]:not(:has([data-testid^="portal-nav-item"])):not(:has(.recharge-tab-navigation-item)) {
     gap: 24px !important;
     padding-bottom: 0 !important;
   }
 
-  body.cf-page-subscriptions .recharge-theme [role="tablist"] [role="tab"],
-  body.cf-page-subscriptions .recharge-theme [role="tablist"] a,
-  body.cf-page-subscriptions .recharge-theme [role="tablist"] button,
-  body.cf-page-subscriptions .recharge-tab,
-  body.cf-page-subscriptions .recharge-tab-active,
-  body.cf-page-subscriptions .recharge-tab-inactive {
+  body.cf-page-subscriptions .recharge-theme [role="tablist"]:not(:has([data-testid^="portal-nav-item"])):not(:has(.recharge-tab-navigation-item)) [role="tab"],
+  body.cf-page-subscriptions .recharge-theme [role="tablist"]:not(:has([data-testid^="portal-nav-item"])):not(:has(.recharge-tab-navigation-item)) a,
+  body.cf-page-subscriptions .recharge-theme [role="tablist"]:not(:has([data-testid^="portal-nav-item"])):not(:has(.recharge-tab-navigation-item)) button,
+  body.cf-page-subscriptions .recharge-tab:not(.recharge-tab-navigation-item),
+  body.cf-page-subscriptions .recharge-tab-active:not(.recharge-tab-navigation-item),
+  body.cf-page-subscriptions .recharge-tab-inactive:not(.recharge-tab-navigation-item) {
     border-radius: 0 !important;
     border: none !important;
     border-bottom: 1px solid #797D86 !important;
@@ -71,22 +79,22 @@
     white-space: nowrap !important;
   }
 
-  body.cf-page-subscriptions .recharge-theme [role="tablist"] [role="tab"][aria-selected="true"],
-  body.cf-page-subscriptions .recharge-theme [role="tablist"] a[aria-selected="true"],
-  body.cf-page-subscriptions .recharge-theme [role="tablist"] a[aria-current],
-  body.cf-page-subscriptions .recharge-theme [role="tablist"] a.active,
-  body.cf-page-subscriptions .recharge-theme [role="tablist"] button[aria-selected="true"],
-  body.cf-page-subscriptions .recharge-theme [role="tablist"] button.active,
-  body.cf-page-subscriptions .recharge-tab-active {
+  body.cf-page-subscriptions .recharge-theme [role="tablist"]:not(:has([data-testid^="portal-nav-item"])):not(:has(.recharge-tab-navigation-item)) [role="tab"][aria-selected="true"],
+  body.cf-page-subscriptions .recharge-theme [role="tablist"]:not(:has([data-testid^="portal-nav-item"])):not(:has(.recharge-tab-navigation-item)) a[aria-selected="true"],
+  body.cf-page-subscriptions .recharge-theme [role="tablist"]:not(:has([data-testid^="portal-nav-item"])):not(:has(.recharge-tab-navigation-item)) a[aria-current],
+  body.cf-page-subscriptions .recharge-theme [role="tablist"]:not(:has([data-testid^="portal-nav-item"])):not(:has(.recharge-tab-navigation-item)) a.active,
+  body.cf-page-subscriptions .recharge-theme [role="tablist"]:not(:has([data-testid^="portal-nav-item"])):not(:has(.recharge-tab-navigation-item)) button[aria-selected="true"],
+  body.cf-page-subscriptions .recharge-theme [role="tablist"]:not(:has([data-testid^="portal-nav-item"])):not(:has(.recharge-tab-navigation-item)) button.active,
+  body.cf-page-subscriptions .recharge-tab-active:not(.recharge-tab-navigation-item) {
     border-bottom-color: #2C70BB !important;
     color: #202635 !important;
     background-color: transparent !important;
   }
 
-  body.cf-page-subscriptions .recharge-theme [role="tablist"] [role="tab"]:hover,
-  body.cf-page-subscriptions .recharge-theme [role="tablist"] a:hover,
-  body.cf-page-subscriptions .recharge-theme [role="tablist"] button:hover,
-  body.cf-page-subscriptions .recharge-tab:hover {
+  body.cf-page-subscriptions .recharge-theme [role="tablist"]:not(:has([data-testid^="portal-nav-item"])):not(:has(.recharge-tab-navigation-item)) [role="tab"]:hover,
+  body.cf-page-subscriptions .recharge-theme [role="tablist"]:not(:has([data-testid^="portal-nav-item"])):not(:has(.recharge-tab-navigation-item)) a:hover,
+  body.cf-page-subscriptions .recharge-theme [role="tablist"]:not(:has([data-testid^="portal-nav-item"])):not(:has(.recharge-tab-navigation-item)) button:hover,
+  body.cf-page-subscriptions .recharge-tab:not(.recharge-tab-navigation-item):hover {
     background-color: transparent !important;
   }
 
@@ -94,21 +102,118 @@
      Subscriptions Page — Card Styling
      =================================================== */
   body.cf-page-subscriptions .recharge-card {
-    border: 1px solid #D9E8F4 !important;
-    background: #FFFFFF !important;
+    border: 0 !important;
+    background: none !important;
     border-radius: 0 !important;
     box-shadow: none !important;
-    padding: 0 8px 20px 18px !important;
-    margin-bottom: 0 !important;
+    padding: 0 8px 0 18px !important;
+    margin: 0 !important;
   }
 
-  /* 1px gap between stacked cards */
+  /* No gap between stacked cards — overlap borders to a single 1px divider */
   body.cf-page-subscriptions .recharge-card + .recharge-card {
-    margin-top: 1px !important;
+    margin-top: -1px !important;
+  }
+
+  /* Zero any flex/grid gap on the container(s) holding the cards/items
+     (Figma 767:13159 — items are flush, no spacing) */
+  body.cf-page-subscriptions :has(> .recharge-card),
+  body.cf-page-subscriptions :has(> .recharge-component-subscription-item) {
+    gap: 0 !important;
   }
 
   /* ===================================================
-     Product Image — Rotated Background Wrapper
+     Subscription Item Card (.recharge-component-subscription-item)
+     Figma 767:13161 — the visible white bordered card.
+     (.recharge-card above is now a transparent outer wrapper.)
+     Layout: 120px image box | title + price + freq pill | caret right
+     =================================================== */
+  body.cf-page-subscriptions .recharge-component-subscription-item {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: wrap !important;
+    align-items: center !important;
+    gap: 20px !important;
+    background: #FFFFFF !important;
+    border: 1px solid #D9E8F4 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    padding: 20px 8px 20px 18px !important;
+    box-sizing: border-box !important;
+    width: 100% !important;
+  }
+
+  /* No gap between stacked items — overlap borders to a single 1px divider */
+  body.cf-page-subscriptions .recharge-component-subscription-item + .recharge-component-subscription-item {
+    margin-top: -1px !important;
+  }
+
+  /* Text lockup (title + price + frequency) — takes remaining width so the
+     caret is pushed to the far right. Bundle-contents excluded (it drops
+     to its own full-width line below). */
+  body.cf-page-subscriptions .recharge-component-subscription-item > *:not(.cf-sub-img-wrap):not(svg):not(a):not(button):not([class*="bundle" i]) {
+    flex: 1 1 auto !important;
+    min-width: 0 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 8px !important;
+  }
+
+  /* Element sequence inside the lockup: title → quantity × price → badge.
+     Recharge renders the frequency badge between title and price, so push
+     it to the end. (order only takes effect because the lockup above is a
+     flex column.) */
+  body.cf-page-subscriptions .recharge-component-subscription-item .cf-freq-badge {
+    order: 9 !important;
+  }
+
+  /* Bundle contents — drop below the main row, full width */
+  body.cf-page-subscriptions .recharge-component-subscription-item > [class*="bundle" i] {
+    order: 10 !important;
+    flex: 0 0 100% !important;
+    width: 100% !important;
+    margin-top: 16px !important;
+  }
+
+  /* Item / bundle quantity count badge — recolor the dark "dot" to the
+     brand light-blue pill (tagged by JS as .cf-count-badge). */
+  body.cf-page-subscriptions .cf-count-badge {
+    background-color: #D9E8F4 !important;
+    color: #202635 !important;
+  }
+  body.cf-page-subscriptions .cf-count-badge * {
+    color: #202635 !important;
+  }
+
+  /* Product title — "Pitcher Replacement Filter" */
+  body.cf-page-subscriptions .recharge-component-subscription-item .recharge-heading {
+    font-size: 18px !important;
+    line-height: 1.4 !important;
+    color: #24293B !important;
+    font-weight: 400 !important;
+    font-family: 'FT System', var(--font-heading--family), sans-serif !important;
+    margin: 0 !important;
+  }
+
+  /* Price line — "1 x $50.00" */
+  body.cf-page-subscriptions .recharge-component-subscription-item .recharge-text {
+    font-size: 16px !important;
+    line-height: 1.4 !important;
+    color: #202635 !important;
+    font-weight: 400 !important;
+    font-family: 'FT System', var(--font-body--family), sans-serif !important;
+    margin: 0 !important;
+  }
+
+  /* Caret / chevron link on the right */
+  body.cf-page-subscriptions .recharge-component-subscription-item svg {
+    flex-shrink: 0 !important;
+    color: #2C70BB !important;
+  }
+
+  /* ===================================================
+     Product Image — Background Wrapper
      =================================================== */
   body.cf-page-subscriptions .cf-sub-img-wrap {
     position: relative;
@@ -126,7 +231,6 @@
     inset: 0;
     background: #F2F7FB;
     border-radius: 4px;
-    transform: rotate(3.1deg);
   }
 
   body.cf-page-subscriptions .cf-sub-img-wrap .recharge-image,
@@ -363,13 +467,13 @@
       letter-spacing: -0.52px !important;
     }
 
-    /* Tabs responsive */
-    body.cf-page-subscriptions .recharge-theme [role="tablist"] [role="tab"],
-    body.cf-page-subscriptions .recharge-theme [role="tablist"] a,
-    body.cf-page-subscriptions .recharge-theme [role="tablist"] button,
-    body.cf-page-subscriptions .recharge-tab,
-    body.cf-page-subscriptions .recharge-tab-active,
-    body.cf-page-subscriptions .recharge-tab-inactive {
+    /* Active/Inactive status tabs responsive (top nav excluded) */
+    body.cf-page-subscriptions .recharge-theme [role="tablist"]:not(:has([data-testid^="portal-nav-item"])):not(:has(.recharge-tab-navigation-item)) [role="tab"],
+    body.cf-page-subscriptions .recharge-theme [role="tablist"]:not(:has([data-testid^="portal-nav-item"])):not(:has(.recharge-tab-navigation-item)) a,
+    body.cf-page-subscriptions .recharge-theme [role="tablist"]:not(:has([data-testid^="portal-nav-item"])):not(:has(.recharge-tab-navigation-item)) button,
+    body.cf-page-subscriptions .recharge-tab:not(.recharge-tab-navigation-item),
+    body.cf-page-subscriptions .recharge-tab-active:not(.recharge-tab-navigation-item),
+    body.cf-page-subscriptions .recharge-tab-inactive:not(.recharge-tab-navigation-item) {
       font-size: 14px !important;
       line-height: 20px !important;
     }
@@ -490,6 +594,7 @@
     renameHeading();
     wrapImages();
     addFreqBadges();
+    addCountBadges();
   }
 
   /**
@@ -572,6 +677,44 @@
       var t = el.textContent.trim();
       if (freqRe.test(t)) {
         el.classList.add('cf-freq-badge');
+      }
+    }
+  }
+
+  /**
+   * Tag the quantity count badges (the dark circular "1" / "5" indicators
+   * on item images and the "Bundle contents (N)" header) with
+   * .cf-count-badge so CSS can recolor them. A count badge is detected as a
+   * leaf element inside a subscription item whose entire text is an integer.
+   * The badge "root" (the circle) may be an ancestor of the number text, so
+   * we walk up while the ancestor's only content is still that number.
+   */
+  function addCountBadges() {
+    if (!isSubsPage) return;
+
+    var items = document.querySelectorAll('.recharge-component-subscription-item');
+    for (var i = 0; i < items.length; i++) {
+      var item = items[i];
+      var els = item.querySelectorAll('span, div, p, small, b, strong');
+      for (var j = 0; j < els.length; j++) {
+        var el = els[j];
+        if (el.children.length > 0) continue;          /* leaf only */
+        if (el.classList.contains('cf-count-badge')) continue;
+        if (el.classList.contains('cf-freq-badge')) continue;
+
+        var t = el.textContent.trim();
+        if (!/^\d+$/.test(t)) continue;
+
+        /* Walk up to the badge container (the circle), staying within the
+           item and only while the ancestor wraps just this number. */
+        var root = el;
+        while (root.parentElement &&
+               root.parentElement !== item &&
+               root.parentElement.children.length <= 1 &&
+               root.parentElement.textContent.trim() === t) {
+          root = root.parentElement;
+        }
+        root.classList.add('cf-count-badge');
       }
     }
   }
