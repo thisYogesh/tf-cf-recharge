@@ -1,0 +1,621 @@
+{% comment %}
+  Recharge Affinity Customer Portal — Subscriptions Page Reskin
+  ==============================================================
+  Restyling the /subscriptions page to match the Figma design:
+  - Custom heading ("Product Subscriptions")
+  - Bottom-border status tabs (Active/Inactive) instead of pill tabs
+  - Styled subscription cards with rotated-background product images
+  - Frequency badge pills
+  - Education Zone card injected via subscriptions.footer slot
+
+  Strategy:
+  - JS IIFE detects the subscriptions page via Recharge::location::change event,
+    adds/removes body.cf-page-subscriptions class for CSS scoping.
+  - MutationObserver wraps .recharge-image elements in .cf-sub-img-wrap for
+    the rotated-background pseudo-element treatment.
+  - MutationObserver finds frequency text and adds .cf-freq-badge class.
+  - CSS overrides scoped under body.cf-page-subscriptions to avoid affecting
+    other portal pages (overview, schedule, etc.).
+  - Education Zone card injected via subscriptions.footer slot with two
+    responsive variants (desktop/mobile) toggled by CSS media queries.
+{% endcomment %}
+
+<style>
+  /* ===================================================
+     Subscriptions Page — Hide Welcome Heading
+     =================================================== */
+  body.cf-page-subscriptions .rc-welcome,
+  body.cf-page-subscriptions .rc-header-slot {
+    display: none !important;
+  }
+
+  /* ===================================================
+     Subscriptions Page — Page Heading
+     =================================================== */
+  body.cf-page-subscriptions [data-cf-sub-heading] {
+    font-size: 42px !important;
+    line-height: 55px !important;
+    letter-spacing: -0.84px !important;
+    color: #202635 !important;
+    font-weight: 400 !important;
+    font-family: 'FT System', var(--font-heading--family), sans-serif !important;
+    margin: 0 !important;
+    padding-bottom: 4px !important;
+  }
+
+  /* ===================================================
+     Subscriptions Page — Tabs (bottom-border style)
+     Overrides the global pill-tab CSS from homepage snippet
+     =================================================== */
+  body.cf-page-subscriptions .recharge-theme [role="tablist"] {
+    gap: 24px !important;
+    padding-bottom: 0 !important;
+  }
+
+  body.cf-page-subscriptions .recharge-theme [role="tablist"] [role="tab"],
+  body.cf-page-subscriptions .recharge-theme [role="tablist"] a,
+  body.cf-page-subscriptions .recharge-theme [role="tablist"] button,
+  body.cf-page-subscriptions .recharge-tab,
+  body.cf-page-subscriptions .recharge-tab-active,
+  body.cf-page-subscriptions .recharge-tab-inactive {
+    border-radius: 0 !important;
+    border: none !important;
+    border-bottom: 1px solid #797D86 !important;
+    background-color: transparent !important;
+    padding: 8px 0 !important;
+    color: #797D86 !important;
+    font-size: 16px !important;
+    line-height: 23px !important;
+    font-family: 'FT System', var(--font-body--family), sans-serif !important;
+    font-weight: 400 !important;
+    white-space: nowrap !important;
+  }
+
+  body.cf-page-subscriptions .recharge-theme [role="tablist"] [role="tab"][aria-selected="true"],
+  body.cf-page-subscriptions .recharge-theme [role="tablist"] a[aria-selected="true"],
+  body.cf-page-subscriptions .recharge-theme [role="tablist"] a[aria-current],
+  body.cf-page-subscriptions .recharge-theme [role="tablist"] a.active,
+  body.cf-page-subscriptions .recharge-theme [role="tablist"] button[aria-selected="true"],
+  body.cf-page-subscriptions .recharge-theme [role="tablist"] button.active,
+  body.cf-page-subscriptions .recharge-tab-active {
+    border-bottom-color: #2C70BB !important;
+    color: #202635 !important;
+    background-color: transparent !important;
+  }
+
+  body.cf-page-subscriptions .recharge-theme [role="tablist"] [role="tab"]:hover,
+  body.cf-page-subscriptions .recharge-theme [role="tablist"] a:hover,
+  body.cf-page-subscriptions .recharge-theme [role="tablist"] button:hover,
+  body.cf-page-subscriptions .recharge-tab:hover {
+    background-color: transparent !important;
+  }
+
+  /* ===================================================
+     Subscriptions Page — Card Styling
+     =================================================== */
+  body.cf-page-subscriptions .recharge-card {
+    border: 1px solid #D9E8F4 !important;
+    background: #FFFFFF !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    padding: 0 8px 20px 18px !important;
+    margin-bottom: 0 !important;
+  }
+
+  /* 1px gap between stacked cards */
+  body.cf-page-subscriptions .recharge-card + .recharge-card {
+    margin-top: 1px !important;
+  }
+
+  /* ===================================================
+     Product Image — Rotated Background Wrapper
+     =================================================== */
+  body.cf-page-subscriptions .cf-sub-img-wrap {
+    position: relative;
+    width: 120px;
+    height: 120px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  body.cf-page-subscriptions .cf-sub-img-wrap::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: #F2F7FB;
+    border-radius: 4px;
+    transform: rotate(3.1deg);
+  }
+
+  body.cf-page-subscriptions .cf-sub-img-wrap .recharge-image,
+  body.cf-page-subscriptions .cf-sub-img-wrap img {
+    position: relative;
+    z-index: 1;
+    max-width: 100% !important;
+    max-height: 100% !important;
+    object-fit: contain !important;
+  }
+
+  /* ===================================================
+     Frequency Badge
+     =================================================== */
+  body.cf-page-subscriptions .cf-freq-badge {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border-radius: 42px !important;
+    background: #D9E8F4 !important;
+    padding: 4px 12px !important;
+    font-family: 'FT System Mono', 'Courier New', monospace !important;
+    font-size: 10px !important;
+    line-height: 14px !important;
+    letter-spacing: 0.4px !important;
+    text-transform: uppercase !important;
+    text-align: center !important;
+    color: #202635 !important;
+    font-weight: 400 !important;
+    white-space: nowrap !important;
+    border: none !important;
+  }
+
+  /* ===================================================
+     Education Zone — Desktop (≥768px)
+     =================================================== */
+  .cf-edu-card--desktop {
+    display: none;
+    flex-direction: column;
+    gap: 12px;
+    border-radius: 16px;
+    background: #D9E8F4;
+    padding: 20px;
+    margin-top: 22px;
+    box-sizing: border-box;
+  }
+
+  .cf-edu-card--desktop .cf-edu-card__header {
+    display: flex;
+    flex-direction: row;
+    gap: 8px;
+    justify-content: space-between;
+  }
+
+  .cf-edu-card--desktop .cf-edu-card__header-text {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    justify-content: flex-end;
+    padding-top: 8px;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .cf-edu-card--desktop .cf-edu-card__eyebrow {
+    font-family: 'FT System Mono', 'Courier New', monospace;
+    font-size: 14px;
+    line-height: 20px;
+    letter-spacing: 0.56px;
+    text-transform: uppercase;
+    color: #202635;
+    font-weight: 400;
+    margin: 0;
+  }
+
+  .cf-edu-card--desktop .cf-edu-card__heading {
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 18px;
+    line-height: 25px;
+    color: #202635;
+    font-weight: 400;
+    margin: 0;
+  }
+
+  .cf-edu-card__icon {
+    flex-shrink: 0;
+    width: 48px;
+    height: 48px;
+  }
+
+  .cf-edu-card__icon img {
+    width: 48px;
+    height: 48px;
+    display: block;
+  }
+
+  .cf-edu-card--desktop .cf-edu-card__body {
+    font-family: 'FT System', var(--font-body--family), sans-serif;
+    font-size: 16px;
+    line-height: 22px;
+    color: #202635;
+    font-weight: 400;
+    margin: 0;
+  }
+
+  .cf-edu-card--desktop .cf-edu-card__link {
+    font-family: 'FT System', var(--font-body--family), sans-serif;
+    font-size: 16px;
+    line-height: 23px;
+    color: #202635;
+    font-weight: 400;
+    text-decoration: underline;
+    cursor: pointer;
+    display: inline-block;
+    align-self: flex-start;
+  }
+
+  .cf-edu-card--desktop .cf-edu-card__link:hover {
+    opacity: 0.8;
+  }
+
+  /* ===================================================
+     Education Zone — Mobile (<768px)
+     =================================================== */
+  .cf-edu-card--mobile {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    border-radius: 8px;
+    background: #E6F0F8;
+    overflow: hidden;
+    margin-top: 16px;
+    box-sizing: border-box;
+  }
+
+  .cf-edu-card--mobile .cf-edu-card__image {
+    width: 100%;
+    aspect-ratio: 358 / 201;
+    object-fit: cover;
+    display: block;
+  }
+
+  .cf-edu-card--mobile .cf-edu-card__text-lockup {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 12px 16px 16px 16px;
+  }
+
+  .cf-edu-card--mobile .cf-edu-card__header-lockup {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    justify-content: flex-end;
+    padding-top: 8px;
+  }
+
+  .cf-edu-card--mobile .cf-edu-card__eyebrow {
+    font-family: 'FT System Mono', 'Courier New', monospace;
+    font-size: 10px;
+    line-height: 14px;
+    letter-spacing: 0.4px;
+    text-transform: uppercase;
+    color: #202635;
+    font-weight: 400;
+    margin: 0;
+  }
+
+  .cf-edu-card--mobile .cf-edu-card__heading {
+    font-family: 'FT System', var(--font-body--family), sans-serif;
+    font-size: 14px;
+    line-height: 20px;
+    letter-spacing: -0.14px;
+    color: #202635;
+    font-weight: 400;
+    margin: 0;
+  }
+
+  .cf-edu-card--mobile .cf-edu-card__link {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-family: 'FT System', var(--font-body--family), sans-serif;
+    font-size: 14px;
+    line-height: 20px;
+    color: #202635;
+    font-weight: 400;
+    text-decoration: none;
+    border-bottom: 1px solid #202635;
+    padding-bottom: 4px;
+    cursor: pointer;
+    align-self: flex-start;
+  }
+
+  .cf-edu-card--mobile .cf-edu-card__link:hover {
+    opacity: 0.8;
+  }
+
+  .cf-edu-card--mobile .cf-edu-card__link-arrow {
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 11px;
+    line-height: 13px;
+    font-weight: 500;
+    text-align: center;
+  }
+
+  /* ===================================================
+     Responsive — Desktop (≥768px)
+     =================================================== */
+  @media screen and (min-width: 768px) {
+    .cf-edu-card--desktop {
+      display: flex;
+    }
+    .cf-edu-card--mobile {
+      display: none;
+    }
+  }
+
+  /* ===================================================
+     Responsive — Mobile (<768px)
+     =================================================== */
+  @media screen and (max-width: 767px) {
+    .cf-edu-card--desktop {
+      display: none;
+    }
+    .cf-edu-card--mobile {
+      display: flex;
+    }
+
+    /* Heading responsive */
+    body.cf-page-subscriptions [data-cf-sub-heading] {
+      font-size: 26px !important;
+      line-height: 34px !important;
+      letter-spacing: -0.52px !important;
+    }
+
+    /* Tabs responsive */
+    body.cf-page-subscriptions .recharge-theme [role="tablist"] [role="tab"],
+    body.cf-page-subscriptions .recharge-theme [role="tablist"] a,
+    body.cf-page-subscriptions .recharge-theme [role="tablist"] button,
+    body.cf-page-subscriptions .recharge-tab,
+    body.cf-page-subscriptions .recharge-tab-active,
+    body.cf-page-subscriptions .recharge-tab-inactive {
+      font-size: 14px !important;
+      line-height: 20px !important;
+    }
+
+    /* Image wrapper responsive */
+    body.cf-page-subscriptions .cf-sub-img-wrap {
+      width: 80px;
+      height: 80px;
+    }
+  }
+</style>
+
+{% comment %} SLOT: Subscriptions Footer — Education Zone Card {% endcomment %}
+<script type="text/html" data-recharge-slot="subscriptions.footer">
+  <div class="cf-edu-card cf-edu-card--desktop">
+    <div class="cf-edu-card__header">
+      <div class="cf-edu-card__header-text">
+        <p class="cf-edu-card__eyebrow">DID YOU KNOW?</p>
+        <p class="cf-edu-card__heading">Your Water is actively protected from 25 harmful contaminants!</p>
+      </div>
+      <div class="cf-edu-card__icon">
+        <img src="{{ 'frame-2822.svg' | asset_url }}" alt="" width="48" height="48" style="width:48px;height:48px">
+      </div>
+    </div>
+    <p class="cf-edu-card__body">Based on your delivery location, we have identified 25 harmful contaminants in your local water supply. Tap water can contain contaminants and forever chemicals such as lead, PFAS and arsenic even when it meets local regulations.</p>
+    <a href="#" class="cf-edu-card__link">Learn more &gt;</a>
+  </div>
+  <div class="cf-edu-card cf-edu-card--mobile">
+    <img
+      class="cf-edu-card__image"
+      src="https://cdn.shopify.com/s/files/1/1000/8959/4135/files/media-desktop-I1150861211376605.png?v=1782377262"
+      alt="Family using filtered water"
+      width="358"
+      height="201"
+      loading="lazy"
+    >
+    <div class="cf-edu-card__text-lockup">
+      <div class="cf-edu-card__header-lockup">
+        <p class="cf-edu-card__eyebrow">DID YOU KNOW?</p>
+        <p class="cf-edu-card__heading">Regular replacement ensures consistent contaminant reduction and retains beneficial minerals in every glass.</p>
+      </div>
+      <a href="#" class="cf-edu-card__link">
+        <span>Learn more</span>
+        <span class="cf-edu-card__link-arrow">&rarr;</span>
+      </a>
+    </div>
+  </div>
+</script>
+
+{% comment %} ===================================================
+   JavaScript: Subscriptions page detection + DOM enhancements
+   =================================================== {% endcomment %}
+<script>
+(function() {
+  'use strict';
+
+  var SUBS_PATH = '/subscriptions';
+  var CLASS_NAME = 'cf-page-subscriptions';
+  var isSubsPage = false;
+  var rafId = 0;
+
+  /**
+   * Check if a pathname matches the subscriptions page
+   * @param {string} pathname
+   * @returns {boolean}
+   */
+  function isSubs(pathname) {
+    return Boolean(pathname && pathname.indexOf(SUBS_PATH) !== -1);
+  }
+
+  /**
+   * Activate subscriptions page enhancements
+   */
+  function activate() {
+    if (isSubsPage) {
+      scheduleEnhance();
+      return;
+    }
+    isSubsPage = true;
+    document.body.classList.add(CLASS_NAME);
+    scheduleEnhance();
+  }
+
+  /**
+   * Deactivate subscriptions page enhancements
+   */
+  function deactivate() {
+    if (!isSubsPage) return;
+    isSubsPage = false;
+    document.body.classList.remove(CLASS_NAME);
+  }
+
+  /**
+   * Route check — add or remove subscriptions page class
+   * @param {string} pathname
+   */
+  function checkPage(pathname) {
+    if (isSubs(pathname)) {
+      activate();
+    } else {
+      deactivate();
+    }
+  }
+
+  /**
+   * Schedule DOM enhancements via requestAnimationFrame
+   */
+  function scheduleEnhance() {
+    cancelAnimationFrame(rafId);
+    rafId = requestAnimationFrame(enhance);
+  }
+
+  /**
+   * Run all DOM enhancements
+   */
+  function enhance() {
+    if (!isSubsPage) return;
+    renameHeading();
+    wrapImages();
+    addFreqBadges();
+  }
+
+  /**
+   * Find and rename the native page heading to "Product Subscriptions"
+   */
+  function renameHeading() {
+    /* Already renamed — skip */
+    if (document.querySelector('[data-cf-sub-heading]')) return;
+
+    var candidates = document.querySelectorAll(
+      '.recharge-heading-h1, .recharge-heading-h2, h1:not(.rc-welcome), h2:not(.rc-welcome)'
+    );
+
+    for (var i = 0; i < candidates.length; i++) {
+      var el = candidates[i];
+      /* Skip welcome heading and our own education card headings */
+      if (el.id === 'rc-welcome-heading') continue;
+      if (el.classList.contains('rc-welcome')) continue;
+      if (el.closest('.cf-edu-card')) continue;
+      if (el.closest('[data-cf-overview]')) continue;
+
+      var text = el.textContent.trim().toLowerCase();
+      if (text.indexOf('subscription') !== -1) {
+        el.textContent = 'Product Subscriptions';
+        el.setAttribute('data-cf-sub-heading', '');
+        return;
+      }
+    }
+  }
+
+  /**
+   * Wrap .recharge-image elements in .cf-sub-img-wrap containers
+   * for the rotated-background pseudo-element treatment
+   */
+  function wrapImages() {
+    if (!isSubsPage) return;
+
+    var images = document.querySelectorAll('.recharge-image');
+    for (var i = 0; i < images.length; i++) {
+      var img = images[i];
+      /* Already wrapped — skip */
+      if (img.closest('.cf-sub-img-wrap')) continue;
+      /* Skip homepage overview card images */
+      if (img.closest('[data-cf-overview]')) continue;
+      /* Skip education card images */
+      if (img.closest('.cf-edu-card')) continue;
+
+      var parent = img.parentElement;
+      if (!parent) continue;
+
+      var wrap = document.createElement('div');
+      wrap.className = 'cf-sub-img-wrap';
+      parent.insertBefore(wrap, img);
+      wrap.appendChild(img);
+    }
+  }
+
+  /**
+   * Find frequency text elements (e.g. "Every 2 months")
+   * and add .cf-freq-badge class for pill styling
+   */
+  function addFreqBadges() {
+    if (!isSubsPage) return;
+
+    var freqRe = /^every\s+\d+\s+(month|week|day|year)s?$/i;
+    var candidates = document.querySelectorAll(
+      '.recharge-text, .recharge-text-p1, .recharge-text-p2, .recharge-text-p3, ' +
+      '.recharge-text-p4, .recharge-text-p5, span, small, p, div'
+    );
+
+    for (var i = 0; i < candidates.length; i++) {
+      var el = candidates[i];
+      /* Already badged — skip */
+      if (el.classList.contains('cf-freq-badge')) continue;
+      /* Only leaf nodes (no children elements) */
+      if (el.children.length > 0) continue;
+      /* Skip elements outside subscription cards */
+      if (el.closest('.cf-edu-card')) continue;
+
+      var t = el.textContent.trim();
+      if (freqRe.test(t)) {
+        el.classList.add('cf-freq-badge');
+      }
+    }
+  }
+
+  /* -------------------------------------------------
+     Event Listeners
+     ------------------------------------------------- */
+
+  /* Recharge SPA route change */
+  document.addEventListener('Recharge::location::change', function(event) {
+    var pathname = (event.detail && event.detail.pathname) || '';
+    checkPage(pathname);
+  });
+
+  /* Slot mount — backup detection */
+  document.addEventListener('Recharge::slot::mounted', function(event) {
+    var pathname = (event.detail && event.detail.pathname) || '';
+    if (isSubs(pathname)) {
+      activate();
+    }
+  });
+
+  /* MutationObserver for dynamically rendered content */
+  var observer = new MutationObserver(function(mutations) {
+    if (!isSubsPage) return;
+    var hasNew = false;
+    for (var i = 0; i < mutations.length; i++) {
+      if (mutations[i].addedNodes.length > 0) {
+        hasNew = true;
+        break;
+      }
+    }
+    if (hasNew) scheduleEnhance();
+  });
+
+  observer.observe(document.body || document.documentElement, {
+    childList: true,
+    subtree: true
+  });
+
+  /* Initial check with delay for SPA routing */
+  setTimeout(function() {
+    var path = window.location.pathname + window.location.hash;
+    checkPage(path);
+  }, 500);
+})();
+</script>
