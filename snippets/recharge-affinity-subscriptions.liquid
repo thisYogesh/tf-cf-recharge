@@ -44,20 +44,28 @@
   }
 
   /* ===================================================
-     Subscriptions Page — Tabs (bottom-border style)
-     Overrides the global pill-tab CSS from homepage snippet
+     Subscriptions Page — Active/Inactive status tabs (bottom-border style)
+     ----------------------------------------------------
+     IMPORTANT: This must ONLY restyle the in-content "Active / Inactive"
+     status filter — NOT the persistent top portal navigation
+     (Dashboard / My Products / Upcoming orders / …). The top nav is a
+     [role="tablist"] whose tabs carry data-testid="portal-nav-item-*" and
+     class "recharge-tab-navigation-item"; those pills must keep the global
+     pill style so the navigation looks identical across all routes
+     (matching /overview). We therefore exclude the navigation tablist/tabs
+     from every selector below.
      =================================================== */
-  body.cf-page-subscriptions .recharge-theme [role="tablist"] {
+  body.cf-page-subscriptions .recharge-theme [role="tablist"]:not(:has([data-testid^="portal-nav-item"])):not(:has(.recharge-tab-navigation-item)) {
     gap: 24px !important;
     padding-bottom: 0 !important;
   }
 
-  body.cf-page-subscriptions .recharge-theme [role="tablist"] [role="tab"],
-  body.cf-page-subscriptions .recharge-theme [role="tablist"] a,
-  body.cf-page-subscriptions .recharge-theme [role="tablist"] button,
-  body.cf-page-subscriptions .recharge-tab,
-  body.cf-page-subscriptions .recharge-tab-active,
-  body.cf-page-subscriptions .recharge-tab-inactive {
+  body.cf-page-subscriptions .recharge-theme [role="tablist"]:not(:has([data-testid^="portal-nav-item"])):not(:has(.recharge-tab-navigation-item)) [role="tab"],
+  body.cf-page-subscriptions .recharge-theme [role="tablist"]:not(:has([data-testid^="portal-nav-item"])):not(:has(.recharge-tab-navigation-item)) a,
+  body.cf-page-subscriptions .recharge-theme [role="tablist"]:not(:has([data-testid^="portal-nav-item"])):not(:has(.recharge-tab-navigation-item)) button,
+  body.cf-page-subscriptions .recharge-tab:not(.recharge-tab-navigation-item),
+  body.cf-page-subscriptions .recharge-tab-active:not(.recharge-tab-navigation-item),
+  body.cf-page-subscriptions .recharge-tab-inactive:not(.recharge-tab-navigation-item) {
     border-radius: 0 !important;
     border: none !important;
     border-bottom: 1px solid #797D86 !important;
@@ -71,22 +79,22 @@
     white-space: nowrap !important;
   }
 
-  body.cf-page-subscriptions .recharge-theme [role="tablist"] [role="tab"][aria-selected="true"],
-  body.cf-page-subscriptions .recharge-theme [role="tablist"] a[aria-selected="true"],
-  body.cf-page-subscriptions .recharge-theme [role="tablist"] a[aria-current],
-  body.cf-page-subscriptions .recharge-theme [role="tablist"] a.active,
-  body.cf-page-subscriptions .recharge-theme [role="tablist"] button[aria-selected="true"],
-  body.cf-page-subscriptions .recharge-theme [role="tablist"] button.active,
-  body.cf-page-subscriptions .recharge-tab-active {
+  body.cf-page-subscriptions .recharge-theme [role="tablist"]:not(:has([data-testid^="portal-nav-item"])):not(:has(.recharge-tab-navigation-item)) [role="tab"][aria-selected="true"],
+  body.cf-page-subscriptions .recharge-theme [role="tablist"]:not(:has([data-testid^="portal-nav-item"])):not(:has(.recharge-tab-navigation-item)) a[aria-selected="true"],
+  body.cf-page-subscriptions .recharge-theme [role="tablist"]:not(:has([data-testid^="portal-nav-item"])):not(:has(.recharge-tab-navigation-item)) a[aria-current],
+  body.cf-page-subscriptions .recharge-theme [role="tablist"]:not(:has([data-testid^="portal-nav-item"])):not(:has(.recharge-tab-navigation-item)) a.active,
+  body.cf-page-subscriptions .recharge-theme [role="tablist"]:not(:has([data-testid^="portal-nav-item"])):not(:has(.recharge-tab-navigation-item)) button[aria-selected="true"],
+  body.cf-page-subscriptions .recharge-theme [role="tablist"]:not(:has([data-testid^="portal-nav-item"])):not(:has(.recharge-tab-navigation-item)) button.active,
+  body.cf-page-subscriptions .recharge-tab-active:not(.recharge-tab-navigation-item) {
     border-bottom-color: #2C70BB !important;
     color: #202635 !important;
     background-color: transparent !important;
   }
 
-  body.cf-page-subscriptions .recharge-theme [role="tablist"] [role="tab"]:hover,
-  body.cf-page-subscriptions .recharge-theme [role="tablist"] a:hover,
-  body.cf-page-subscriptions .recharge-theme [role="tablist"] button:hover,
-  body.cf-page-subscriptions .recharge-tab:hover {
+  body.cf-page-subscriptions .recharge-theme [role="tablist"]:not(:has([data-testid^="portal-nav-item"])):not(:has(.recharge-tab-navigation-item)) [role="tab"]:hover,
+  body.cf-page-subscriptions .recharge-theme [role="tablist"]:not(:has([data-testid^="portal-nav-item"])):not(:has(.recharge-tab-navigation-item)) a:hover,
+  body.cf-page-subscriptions .recharge-theme [role="tablist"]:not(:has([data-testid^="portal-nav-item"])):not(:has(.recharge-tab-navigation-item)) button:hover,
+  body.cf-page-subscriptions .recharge-tab:not(.recharge-tab-navigation-item):hover {
     background-color: transparent !important;
   }
 
@@ -363,13 +371,13 @@
       letter-spacing: -0.52px !important;
     }
 
-    /* Tabs responsive */
-    body.cf-page-subscriptions .recharge-theme [role="tablist"] [role="tab"],
-    body.cf-page-subscriptions .recharge-theme [role="tablist"] a,
-    body.cf-page-subscriptions .recharge-theme [role="tablist"] button,
-    body.cf-page-subscriptions .recharge-tab,
-    body.cf-page-subscriptions .recharge-tab-active,
-    body.cf-page-subscriptions .recharge-tab-inactive {
+    /* Active/Inactive status tabs responsive (top nav excluded) */
+    body.cf-page-subscriptions .recharge-theme [role="tablist"]:not(:has([data-testid^="portal-nav-item"])):not(:has(.recharge-tab-navigation-item)) [role="tab"],
+    body.cf-page-subscriptions .recharge-theme [role="tablist"]:not(:has([data-testid^="portal-nav-item"])):not(:has(.recharge-tab-navigation-item)) a,
+    body.cf-page-subscriptions .recharge-theme [role="tablist"]:not(:has([data-testid^="portal-nav-item"])):not(:has(.recharge-tab-navigation-item)) button,
+    body.cf-page-subscriptions .recharge-tab:not(.recharge-tab-navigation-item),
+    body.cf-page-subscriptions .recharge-tab-active:not(.recharge-tab-navigation-item),
+    body.cf-page-subscriptions .recharge-tab-inactive:not(.recharge-tab-navigation-item) {
       font-size: 14px !important;
       line-height: 20px !important;
     }
