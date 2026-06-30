@@ -1,7 +1,42 @@
 /**
- * Pitcher Filter Health Tracker Widget
- * Self-contained Web Component for Recharge Affinity custom extension.
- * Zero external dependencies — all CSS, HTML, SVG inlined in Shadow DOM.
+ * Pitcher Filter Health Tracker — Recharge Affinity Custom Extension
+ * ===================================================================
+ *
+ * PURPOSE:
+ *   Standalone Custom Extension upload artifact for the Recharge Affinity
+ *   Home Page Builder. This file is uploaded directly via the Affinity
+ *   customizer (Storefront → Customer portal → Customize → Add a section →
+ *   Custom extensions → Create a custom extension) and rendered inside the
+ *   Affinity portal without any Shopify Liquid wrapper.
+ *
+ * REGISTRATION:
+ *   Tag name:   cf-tracker-widget
+ *   Events:     Recharge::action::orderChanged  (triggers refresh())
+ *
+ * ATTRIBUTES (set via HTML or programmatically — all optional, have defaults):
+ *   days-left            — integer, days remaining (default: 28)
+ *   total-days           — integer, total filter lifespan (default: 60)
+ *   delivered-date       — string, display date (default: "Mar 21")
+ *   replace-date         — string, display date (default: "Apr 21")
+ *   household-size       — string, "1"|"2"|"3"|"4" (default: "2")
+ *   zip-code             — string (default: "84098")
+ *   contaminant-count    — string (default: "25")
+ *   gallons-filtered     — string (default: "250")
+ *   days-of-protection   — string (default: "57")
+ *   bottles-saved        — string (default: "900")
+ *   alert-message        — string, dismissible alert text
+ *   location-alert-message — string, location-based alert text
+ *   bg-image             — URL string, fallback background image
+ *   bg-video             — URL string, looping background video
+ *
+ * IMPORTANT:
+ *   - This file uses `export default` as required by the Custom Extension API.
+ *   - There is NO `customElements.define()` call — Recharge handles element
+ *     registration using the tag name entered in the customizer.
+ *   - Zero external imports. Zero Shopify/Liquid dependencies. Fully standalone.
+ *   - All CSS, SVG, and HTML are self-contained within Shadow DOM.
+ *   - Portal overlays (Reset / Household modals) append to `document.body`.
+ *   - The `refresh()` method is called by Recharge on configured events.
  */
 
 const CF_STYLES = `
@@ -547,6 +582,10 @@ class CfTrackerWidget extends HTMLElement {
     }
   }
 
+  /**
+   * Called by Recharge when a configured event fires (e.g., Recharge::action::orderChanged).
+   * Re-renders the widget to reflect any updated state.
+   */
   refresh() {
     this.render();
   }
@@ -658,7 +697,7 @@ class CfTrackerWidget extends HTMLElement {
   /* ── Main Tracker View ── */
   _renderMain(arcPath, arcLength, fillLength) {
     const hasLocationAlert = this.locationAlertMessage || (this.zipCode && this.contaminantCount);
-    const locationText = this.locationAlertMessage || `${this.zipCode}: Actively protecting from ${this.contaminantCount} contaminants in local drinking water. See What's in Your Water \u2192`;
+    const locationText = this.locationAlertMessage || `${this.zipCode}: Actively protecting from ${this.contaminantCount} contaminants in local drinking water. See What\u2019s in Your Water \u2192`;
 
     return `
       <span class="cf-tracker__title">Pitcher Filter Health</span>

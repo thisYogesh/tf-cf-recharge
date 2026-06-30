@@ -1,0 +1,91 @@
+{% comment %}
+  Water Contaminant Alert — Upcoming Orders (Schedule) Tab Header
+  Displays a compact alert card with warning icon, title, and body text
+  matching the Figma "Education - image+text" component (733×102).
+  Pure markup partial — rendered INSIDE the "schedule.header" slot template
+  in recharge-affinity-homepage.liquid.
+  Uses .cf-alert-schedule BEM prefix to avoid CSS collision with existing
+  integration class sets (.cf-did-you-know, .cf-dyk-footer, .cf-dyk-schedule,
+  .cf-articles, .cf-faq).
+{% endcomment %}
+
+<style>
+  .cf-alert-schedule {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 20px 20px 20px 19px;
+    background-color: #F8EDE0;
+    border: 1px solid #ED7C5C;
+    border-radius: 16px;
+    margin-bottom: 32px;
+  }
+
+  .cf-alert-schedule__header {
+    display: flex;
+    flex-direction: row;
+    gap: 4px;
+    align-items: center;
+  }
+
+  .cf-alert-schedule__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+    color: #ED7C5C;
+  }
+
+  .cf-alert-schedule__icon svg {
+    width: 16px;
+    height: 16px;
+    display: block;
+  }
+
+  .cf-alert-schedule__title {
+    font-family: 'FT System', var(--font-heading--family), sans-serif;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 20px;
+    letter-spacing: -0.14px;
+    color: #202635;
+    margin: 0;
+  }
+
+  .cf-alert-schedule__body {
+    font-family: 'FT System', var(--font-body--family), sans-serif;
+    font-weight: 400;
+    font-size: 12px;
+    line-height: 17px;
+    letter-spacing: 0.12px;
+    color: #202635;
+    margin: 0;
+  }
+</style>
+
+{% comment %}
+  Content is driven by the `alert_recharge` metaobject (fields: heading,
+  description). Hardcoded fallbacks below render when no entry is published.
+  shop.metaobjects.*.values is a lazy drop — must be iterated (limit: 1); fields
+  are read directly (entry.heading.value), never via .fields.
+{% endcomment %}
+{% liquid
+  assign alert_heading = 'Water Contaminant Alert for 84098'
+  assign alert_description = "Our filters are actively protecting your home's water supply from 25 harmful contaminants. Ensure timely replacement to maintain protection."
+  for entry in shop.metaobjects.alert_recharge.values limit: 1
+    assign alert_heading = entry.heading.value | default: alert_heading
+    assign alert_description = entry.description.value | default: alert_description
+  endfor
+%}
+
+<div class="cf-alert-schedule">
+  <div class="cf-alert-schedule__header">
+    <span class="cf-alert-schedule__icon">
+      {{ 'icon-warning.svg' | inline_asset_content }}
+    </span>
+    <p class="cf-alert-schedule__title">{{ alert_heading }}</p>
+  </div>
+  <p class="cf-alert-schedule__body">{{ alert_description | newline_to_br }}</p>
+</div>

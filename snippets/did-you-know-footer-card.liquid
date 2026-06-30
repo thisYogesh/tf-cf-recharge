@@ -1,0 +1,138 @@
+{% comment %}
+  Did You Know Footer Card — Recharge Affinity Integration
+  Displays a compact horizontal educational card with eyebrow, headline,
+  icon circle, and learn-more link. No media image/video — text-only layout.
+  Pure markup partial — rendered INSIDE the "subscriptions.footer" slot template
+  in recharge-affinity-homepage.liquid.
+  Uses .cf-dyk-footer BEM prefix to avoid CSS collision with the existing
+  .cf-did-you-know sidebar card (both render in the same DOM on Subscriptions tab).
+
+  Content is sourced from the "did_you_know_subscriptions_footer" metaobject
+  (first entry). Hardcoded copy below is the fallback if no entry is published.
+{% endcomment %}
+
+{% comment %}
+  shop.metaobjects.<type>.values is a lazy drop — .first / [0] return blank.
+  Iterate with `limit: 1` to read the first entry. Fallbacks are assigned
+  first so the card still renders if no entry is published.
+{% endcomment %}
+{% liquid
+  assign dyk_eyebrow = 'Did you know?'
+  assign dyk_headline = 'In addition to protecting you from harmful contaminants in your water, your pitcher filter subscription has saved 800 plastic water bottles from the landfill.'
+  assign dyk_cta_label = 'Learn more'
+  assign dyk_cta_url = '#'
+
+  for entry in shop.metaobjects.did_you_know_subscriptions_footer.values limit: 1
+    assign dyk_eyebrow = entry.eyebrow.value | default: dyk_eyebrow
+    assign dyk_headline = entry.headline.value | default: dyk_headline
+    assign dyk_cta_label = entry.cta_label.value | default: dyk_cta_label
+    assign dyk_cta_url = entry.cta_url.value | default: dyk_cta_url
+  endfor
+%}
+
+<style>
+  .cf-dyk-footer {
+    margin-top: 32px;
+    border-radius: 8px;
+    overflow: hidden;
+    background-color: #E6F0F8;
+  }
+
+  .cf-dyk-footer__text-lockup {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 20px 20px 20px 16px;
+    overflow: hidden;
+  }
+
+  .cf-dyk-footer__heading {
+    display: flex;
+    flex-direction: row;
+    gap: 24px;
+  }
+
+  .cf-dyk-footer__heading-lockup {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    justify-content: flex-end;
+    padding-top: 8px;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .cf-dyk-footer__eyebrow {
+    font-family: 'FT System Mono', monospace;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 20px;
+    letter-spacing: 0.56px;
+    text-transform: uppercase;
+    color: #202635;
+    margin: 0;
+  }
+
+  .cf-dyk-footer__headline {
+    font-family: 'FT System', var(--font-body--family), sans-serif;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 22px;
+    color: #202635;
+    margin: 0;
+  }
+
+  .cf-dyk-footer__icon {
+    width: 40px;
+    height: 40px;
+    flex-shrink: 0;
+  }
+
+  .cf-dyk-footer__icon svg {
+    width: 40px;
+    height: 40px;
+    display: block;
+  }
+
+  .cf-dyk-footer__learn-more {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding-bottom: 4px;
+    border-bottom: 1px solid #202635;
+    text-decoration: none;
+    font-family: 'FT System', var(--font-body--family), sans-serif;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 20px;
+    color: #202635;
+    width: fit-content;
+  }
+
+  .cf-dyk-footer__learn-more-arrow {
+    font-family: Inter, var(--font-body--family), sans-serif;
+    font-weight: 500;
+    font-size: 11px;
+    line-height: 13px;
+    text-align: center;
+    color: #202635;
+  }
+</style>
+
+<div class="cf-dyk-footer">
+  <div class="cf-dyk-footer__text-lockup">
+    <div class="cf-dyk-footer__heading">
+      <div class="cf-dyk-footer__heading-lockup">
+        <p class="cf-dyk-footer__eyebrow">{{ dyk_eyebrow }}</p>
+        <p class="cf-dyk-footer__headline">{{ dyk_headline }}</p>
+      </div>
+      <div class="cf-dyk-footer__icon">
+        {{ 'icon.svg' | inline_asset_content }}
+      </div>
+    </div>
+    <a href="{{ dyk_cta_url }}" class="cf-dyk-footer__learn-more">
+      {{ dyk_cta_label }}
+      <span class="cf-dyk-footer__learn-more-arrow">&rarr;</span>
+    </a>
+  </div>
+</div>
