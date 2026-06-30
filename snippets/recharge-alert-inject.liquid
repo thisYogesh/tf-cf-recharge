@@ -1,0 +1,89 @@
+{% comment %}
+  Water Contaminant Alert — Manual Injection ABOVE the portal tab navigation
+  ==========================================================================
+  The Recharge Affinity portal renders its primary tab navigation as a
+  [role="tablist"] of [role="tab"] items
+  (e.g. data-testid="portal-nav-item-subscriptions_navigation_link"), and the
+  active tab carries aria-selected="true". The per-page ".header" slot renders
+  BELOW that tablist, so a slot cannot place content above the tabs.
+
+  This snippet injects the alert card as the sibling immediately preceding the
+  tablist, and shows it ONLY while the active tab is one of the trigger tabs
+  (Subscriptions / Upcoming orders). On any other tab the card is removed.
+
+  The portal is a SPA: a MutationObserver watches childList/subtree changes AND
+  aria-selected attribute toggles so the card appears/disappears as the shopper
+  switches tabs. Injection is idempotent via the .cf-alert-inject-wrapper guard.
+  Rendered from layout/theme.liquid when the path contains /tools/recurring.
+{% endcomment %}
+
+<template id="cf-alert-inject-template">
+  <div class="cf-alert-inject-wrapper">{% render 'recharge-alert-schedule' %}</div>
+</template>
+
+<script>
+(function () {
+  'use strict';
+
+  var TABLIST_SELECTOR = '[role="tablist"]';
+  var TAB_SELECTOR = '[role="tab"]';
+
+  /* Tabs that should display the alert. Matched against the active tab's
+     visible text, data-key, or data-testid for resilience. */
+  var TRIGGER_TEXT = ['Subscriptions', 'Upcoming orders'];
+  var TRIGGER_PATTERN = /subscriptions|schedule|upcoming/i;
+
+  function activeTabIsTrigger() {
+    var tabs = document.querySelectorAll(TAB_SELECTOR);
+    for (var i = 0; i < tabs.length; i++) {
+      if (tabs[i].getAttribute('aria-selected') !== 'true') continue;
+
+      var text = (tabs[i].textContent || '').replace(/\s+/g, ' ').trim();
+      if (TRIGGER_TEXT.indexOf(text) !== -1) return true;
+
+      var key = tabs[i].getAttribute('data-key') || '';
+      var testid = tabs[i].getAttribute('data-testid') || '';
+      return TRIGGER_PATTERN.test(key) || TRIGGER_PATTERN.test(testid);
+    }
+    return false;
+  }
+
+  function sync() {
+    var existing = document.querySelector('.cf-alert-inject-wrapper');
+
+    if (!activeTabIsTrigger()) {
+      if (existing) existing.remove();
+      return;
+    }
+
+    if (existing) return; /* already shown on this trigger tab */
+
+    var tablist = document.querySelector(TABLIST_SELECTOR);
+    if (!tablist || !tablist.parentElement) return;
+
+    var template = document.getElementById('cf-alert-inject-template');
+    if (!template) return;
+
+    var fragment = template.content.cloneNode(true);
+    tablist.parentElement.insertBefore(fragment, tablist);
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', sync);
+  } else {
+    sync();
+  }
+
+  var observer = new MutationObserver(function () {
+    sync();
+  });
+
+  var root = document.body || document.documentElement;
+  observer.observe(root, {
+    childList: true,
+    subtree: true,
+    attributes: true,
+    attributeFilter: ['aria-selected']
+  });
+})();
+</script>

@@ -1,0 +1,200 @@
+{% comment %}
+  Did You Know Educational Card — Recharge Affinity Integration
+  Displays an educational card with media image, decorative video controls,
+  eyebrow label, headline text, and learn more link.
+  Pure markup partial — cloned into the Recharge Affinity sidebar
+  ([data-testid="sidebar-container"]) by did-you-know-sidebar-inject.liquid,
+  appended as a sibling of the existing extension div. Must NOT declare its own
+  data-recharge-slot template: only one template can bind to a given slot, so a
+  second "*.sidebar" template would collide with the tracker.
+{% endcomment %}
+
+<style>
+  .cf-did-you-know {
+    margin-top: 32px;
+    max-width: 354px;
+    border-radius: 8px;
+    overflow: hidden;
+    background-color: #E6F0F8;
+  }
+
+  .cf-did-you-know__media {
+    position: relative;
+  }
+
+  .cf-did-you-know__media img {
+    width: 100%;
+    display: block;
+  }
+
+  .cf-did-you-know__video-controls {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 8px 12px;
+    background: rgba(0, 0, 0, 0.4);
+    overflow: hidden;
+  }
+
+  .cf-did-you-know__control-frame {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+  }
+
+  .cf-did-you-know__control-frame--play {
+    width: 14px;
+    height: 28px;
+  }
+
+  .cf-did-you-know__control-frame--volume {
+    width: 14px;
+    height: 28px;
+  }
+
+  .cf-did-you-know__control-frame--cc {
+    width: 22px;
+    height: 28px;
+  }
+
+  .cf-did-you-know__control-frame--fullscreen {
+    width: 12px;
+    height: 28px;
+  }
+
+  .cf-did-you-know__control-text {
+    font-family: Inter, var(--font-heading--family), sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    line-height: 17px;
+    color: #FFFFFF;
+  }
+
+  .cf-did-you-know__progress-track {
+    width: 150px;
+    height: 4px;
+    border-radius: 2px;
+    background: rgba(255, 255, 255, 0.4);
+    overflow: hidden;
+  }
+
+  .cf-did-you-know__progress-fill {
+    width: 60px;
+    height: 4px;
+    background: #FFFFFF;
+  }
+
+  .cf-did-you-know__time {
+    font-family: Inter, var(--font-body--family), sans-serif;
+    font-weight: 500;
+    font-size: 12px;
+    line-height: 15px;
+    color: #FFFFFF;
+  }
+
+  .cf-did-you-know__text-lockup {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 12px 16px 16px 16px;
+    overflow: hidden;
+  }
+
+  .cf-did-you-know__heading-lockup {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding-top: 8px;
+  }
+
+  .cf-did-you-know__eyebrow {
+    font-family: 'FT System Mono', monospace;
+    font-weight: 400;
+    font-size: 10px;
+    line-height: 14px;
+    letter-spacing: 0.4px;
+    text-transform: uppercase;
+    color: #202635;
+    margin: 0;
+  }
+
+  .cf-did-you-know__headline {
+    font-family: 'FT System', var(--font-body--family), sans-serif;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 20px;
+    letter-spacing: -0.14px;
+    color: #202635;
+    margin: 0;
+  }
+
+  .cf-did-you-know__learn-more {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding-bottom: 4px;
+    border-bottom: 1px solid #202635;
+    text-decoration: none;
+    font-family: 'FT System', var(--font-body--family), sans-serif;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 20px;
+    color: #202635;
+    width: fit-content;
+  }
+
+  .cf-did-you-know__learn-more-arrow {
+    font-family: Inter, var(--font-body--family), sans-serif;
+    font-weight: 500;
+    font-size: 11px;
+    line-height: 13px;
+    text-align: center;
+    color: #202635;
+  }
+</style>
+
+  <div class="cf-did-you-know">
+    <div class="cf-did-you-know__media">
+      <img
+        src="{{ 'media-did-you-know-section-I1205985011175978.png' | file_url }}"
+        alt="Did you know educational video"
+        width="358"
+        height="201"
+        loading="lazy"
+      >
+      <div class="cf-did-you-know__video-controls">
+        <span class="cf-did-you-know__control-frame cf-did-you-know__control-frame--play">
+          <span class="cf-did-you-know__control-text">&#9654;</span>
+        </span>
+        <div class="cf-did-you-know__progress-track">
+          <div class="cf-did-you-know__progress-fill"></div>
+        </div>
+        <span class="cf-did-you-know__time">0:32 / 2:10</span>
+        <span class="cf-did-you-know__control-frame cf-did-you-know__control-frame--volume">
+          <span class="cf-did-you-know__control-text">&#128266;</span>
+        </span>
+        <span class="cf-did-you-know__control-frame cf-did-you-know__control-frame--cc">
+          <span class="cf-did-you-know__control-text">CC</span>
+        </span>
+        <span class="cf-did-you-know__control-frame cf-did-you-know__control-frame--fullscreen">
+          <span class="cf-did-you-know__control-text">&#9974;</span>
+        </span>
+      </div>
+    </div>
+    <div class="cf-did-you-know__text-lockup">
+      <div class="cf-did-you-know__heading-lockup">
+        <p class="cf-did-you-know__eyebrow">Did you know?</p>
+        <p class="cf-did-you-know__headline">Regular replacement ensures consistent contaminant reduction and retains beneficial minerals in every glass.</p>
+      </div>
+      <a href="#" class="cf-did-you-know__learn-more">
+        Learn more
+        <span class="cf-did-you-know__learn-more-arrow">&rarr;</span>
+      </a>
+    </div>
+  </div>

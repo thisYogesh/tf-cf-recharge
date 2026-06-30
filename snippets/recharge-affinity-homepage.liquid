@@ -351,16 +351,44 @@
   </div>
 </script>
 
-{% comment %} SLOT: Overview Footer — Upsell Placeholder {% endcomment %}
+{% comment %} =============================================
+   Contaminant Alert is injected ABOVE the tab navigation by
+   snippets/recharge-alert-inject.liquid (a .header slot would render it
+   BELOW the tabs, which is not where the design wants it).
+   ============================================= {% endcomment %}
+
+{% comment %} Sidebar tracker is now handled by the cf-tracker-widget Web Component
+   — see snippets/affinity-tracker-widget.liquid {% endcomment %}
+
+{% comment %} =============================================
+   SLOT: Overview Footer — Upsell Placeholder
+   ============================================= {% endcomment %}
 <script type="text/html" data-recharge-slot="overview.footer">
   <div class="rc-upsell-placeholder" id="rc-upsell">
     X-Sell/Upsell Container Placeholder
   </div>
 </script>
 
-{% comment %} ===================================================
-   JavaScript: DOM restructuring + Recharge API
-   =================================================== {% endcomment %}
+{% comment %} =============================================
+   SLOT: Subscriptions Footer — Did You Know Card
+   ============================================= {% endcomment %}
+<script type="text/html" data-recharge-slot="subscriptions.footer">
+  {% render 'did-you-know-footer-card' %}
+  {% render 'recharge-articles-cards' %}
+</script>
+
+{% comment %} =============================================
+   SLOT: Upcoming Orders Footer — Did You Know Card
+   ("schedule" is the Recharge Affinity page id for Upcoming orders)
+   ============================================= {% endcomment %}
+<script type="text/html" data-recharge-slot="schedule.footer">
+  {% render 'recharge-dyk-schedule' %}
+  {% render 'recharge-faq' %}
+</script>
+
+{% comment %} =============================================
+   JavaScript: Recharge SDK + Tracker Widget Logic
+   ============================================= {% endcomment %}
 <script>
 (function() {
   'use strict';
@@ -693,10 +721,12 @@
   }
 
   document.addEventListener('Recharge::slot::mounted', function(event) {
-    var name = event.detail && event.detail.name;
-    if (name === 'sidebar' || name === 'header') {
-      initTrackerAndProductName();
-      if (name === 'header') initWelcome();
+    const name = event.detail && event.detail.name;
+    if (name === 'sidebar') {
+      initTrackerWidget();
+    }
+    if (name === 'header') {
+      initWelcome();
     }
   });
 

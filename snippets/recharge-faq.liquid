@@ -1,0 +1,185 @@
+{% comment %}
+  FAQ Accordion — Recharge Affinity Integration
+  Displays a vertically-stacked FAQ accordion rendered INSIDE slot templates in
+  recharge-affinity-homepage.liquid (schedule.footer — Upcoming orders tab).
+
+  Content source: the `faq_recharge_footer` metaobject (container) holding a Title
+  and an ordered list (`faq`) of `faq_recharge` item entries (Question + Answer).
+  Hardcoded fallbacks render when no entry is published. Fields are read by
+  iterating shop.metaobjects.* (.first/[0] return blank drops — must loop), and
+  accessed directly on the drop (entry.title.value — NOT entry.fields.title).
+
+  Uses .cf-faq BEM prefix to avoid CSS collision with existing .cf-did-you-know,
+  .cf-dyk-footer, and .cf-articles selectors.
+
+  Uses native <details>/<summary> elements for accordion expand/collapse without JS,
+  which avoids timing issues with Recharge slot injection.
+{% endcomment %}
+
+<style>
+  .cf-faq {
+    margin-top: 32px;
+    background-color: #FFFFFF;
+    padding: 16px;
+    overflow: hidden;
+  }
+
+  .cf-faq__heading {
+    font-family: 'FT System', var(--font-heading--family), sans-serif;
+    font-weight: 400;
+    font-size: 36px;
+    line-height: 47px;
+    letter-spacing: -0.36px;
+    color: #000000;
+    margin: 0;
+    padding-bottom: 24px;
+    border-bottom: 1px solid #E5E5E5;
+  }
+
+  .cf-faq__items {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .cf-faq__item {
+    border-top: 1px solid #E5E5E5;
+    padding-top: 24px;
+    padding-bottom: 24px;
+  }
+
+  .cf-faq__item:first-child {
+    border-top: none;
+    padding-top: 24px;
+  }
+
+  .cf-faq__item:last-child {
+    padding-bottom: 0;
+  }
+
+  .cf-faq__question {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    cursor: pointer;
+    list-style: none;
+  }
+
+  .cf-faq__question::-webkit-details-marker {
+    display: none;
+  }
+
+  .cf-faq__question-text {
+    font-family: 'FT System', var(--font-body--family), sans-serif;
+    font-weight: 400;
+    font-size: 20px;
+    line-height: 26px;
+    letter-spacing: -0.2px;
+    color: #202635;
+    margin: 0;
+  }
+
+  .cf-faq__chevron {
+    flex-shrink: 0;
+    width: 16px;
+    height: 9px;
+    color: #202635;
+    transition: transform 0.2s ease;
+  }
+
+  .cf-faq__item[open] .cf-faq__chevron {
+    transform: rotate(180deg);
+  }
+
+  .cf-faq__answer {
+    padding-top: 24px;
+    max-width: 92%;
+  }
+
+  .cf-faq__answer-text {
+    font-family: 'FT System', var(--font-body--family), sans-serif;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 22px;
+    color: #202635;
+    margin: 0;
+  }
+</style>
+
+{%- capture cf_faq_chevron -%}
+<svg class="cf-faq__chevron" xmlns="http://www.w3.org/2000/svg" width="16" height="9" viewBox="0 0 16 9" fill="none">
+  <path d="M1 1L8 8L15 1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
+{%- endcapture -%}
+
+{%- liquid
+  assign faq_heading = 'Frequently Asked Questions'
+  assign faq_items = nil
+  for entry in shop.metaobjects.faq_recharge_footer.values limit: 1
+    if entry.title.value != blank
+      assign faq_heading = entry.title.value
+    endif
+    assign faq_items = entry.faq.value
+  endfor
+-%}
+
+<div class="cf-faq">
+  <h2 class="cf-faq__heading">{{ faq_heading }}</h2>
+
+  <div class="cf-faq__items">
+    {%- if faq_items != nil and faq_items.size > 0 -%}
+      {%- for item in faq_items -%}
+        <details class="cf-faq__item"{% if forloop.first %} open{% endif %}>
+          <summary class="cf-faq__question">
+            <span class="cf-faq__question-text">{{ item.question.value }}</span>
+            {{ cf_faq_chevron }}
+          </summary>
+          <div class="cf-faq__answer">
+            <p class="cf-faq__answer-text">{{ item.answer.value | newline_to_br }}</p>
+          </div>
+        </details>
+      {%- endfor -%}
+    {%- else -%}
+      <details class="cf-faq__item" open>
+        <summary class="cf-faq__question">
+          <span class="cf-faq__question-text">Which contaminants does your fridge filter target?</span>
+          {{ cf_faq_chevron }}
+        </summary>
+        <div class="cf-faq__answer">
+          <p class="cf-faq__answer-text">Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.</p>
+        </div>
+      </details>
+
+      <details class="cf-faq__item">
+        <summary class="cf-faq__question">
+          <span class="cf-faq__question-text">How long does your inline fridge filter last?</span>
+          {{ cf_faq_chevron }}
+        </summary>
+        <div class="cf-faq__answer">
+          <p class="cf-faq__answer-text">Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.</p>
+        </div>
+      </details>
+
+      <details class="cf-faq__item">
+        <summary class="cf-faq__question">
+          <span class="cf-faq__question-text">Is it really compatible with any fridge?</span>
+          {{ cf_faq_chevron }}
+        </summary>
+        <div class="cf-faq__answer">
+          <p class="cf-faq__answer-text">Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.</p>
+        </div>
+      </details>
+
+      <details class="cf-faq__item">
+        <summary class="cf-faq__question">
+          <span class="cf-faq__question-text">Do I need to remove my refrigerator's built-in filter?</span>
+          {{ cf_faq_chevron }}
+        </summary>
+        <div class="cf-faq__answer">
+          <p class="cf-faq__answer-text">Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.</p>
+        </div>
+      </details>
+    {%- endif -%}
+  </div>
+</div>
