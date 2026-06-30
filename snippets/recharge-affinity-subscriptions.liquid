@@ -169,6 +169,16 @@
     margin-top: 16px !important;
   }
 
+  /* Item / bundle quantity count badge — recolor the dark "dot" to the
+     brand light-blue pill (tagged by JS as .cf-count-badge). */
+  body.cf-page-subscriptions .cf-count-badge {
+    background-color: #D9E8F4 !important;
+    color: #202635 !important;
+  }
+  body.cf-page-subscriptions .cf-count-badge * {
+    color: #202635 !important;
+  }
+
   /* Product title — "Pitcher Replacement Filter" */
   body.cf-page-subscriptions .recharge-component-subscription-item .recharge-heading {
     font-size: 18px !important;
@@ -577,6 +587,7 @@
     renameHeading();
     wrapImages();
     addFreqBadges();
+    addCountBadges();
   }
 
   /**
@@ -659,6 +670,44 @@
       var t = el.textContent.trim();
       if (freqRe.test(t)) {
         el.classList.add('cf-freq-badge');
+      }
+    }
+  }
+
+  /**
+   * Tag the quantity count badges (the dark circular "1" / "5" indicators
+   * on item images and the "Bundle contents (N)" header) with
+   * .cf-count-badge so CSS can recolor them. A count badge is detected as a
+   * leaf element inside a subscription item whose entire text is an integer.
+   * The badge "root" (the circle) may be an ancestor of the number text, so
+   * we walk up while the ancestor's only content is still that number.
+   */
+  function addCountBadges() {
+    if (!isSubsPage) return;
+
+    var items = document.querySelectorAll('.recharge-component-subscription-item');
+    for (var i = 0; i < items.length; i++) {
+      var item = items[i];
+      var els = item.querySelectorAll('span, div, p, small, b, strong');
+      for (var j = 0; j < els.length; j++) {
+        var el = els[j];
+        if (el.children.length > 0) continue;          /* leaf only */
+        if (el.classList.contains('cf-count-badge')) continue;
+        if (el.classList.contains('cf-freq-badge')) continue;
+
+        var t = el.textContent.trim();
+        if (!/^\d+$/.test(t)) continue;
+
+        /* Walk up to the badge container (the circle), staying within the
+           item and only while the ancestor wraps just this number. */
+        var root = el;
+        while (root.parentElement &&
+               root.parentElement !== item &&
+               root.parentElement.children.length <= 1 &&
+               root.parentElement.textContent.trim() === t) {
+          root = root.parentElement;
+        }
+        root.classList.add('cf-count-badge');
       }
     }
   }
