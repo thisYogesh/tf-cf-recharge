@@ -358,9 +358,16 @@
   </div>
 </script>
 
-{% comment %} ===================================================
-   JavaScript: DOM restructuring + Recharge API
-   =================================================== {% endcomment %}
+{% comment %} =============================================
+   SLOT: Subscriptions Footer — Did You Know Card
+   ============================================= {% endcomment %}
+<script type="text/html" data-recharge-slot="subscriptions.footer">
+  {% render 'did-you-know-footer-card' %}
+</script>
+
+{% comment %} =============================================
+   JavaScript: Recharge SDK + Tracker Widget Logic
+   ============================================= {% endcomment %}
 <script>
 (function() {
   'use strict';

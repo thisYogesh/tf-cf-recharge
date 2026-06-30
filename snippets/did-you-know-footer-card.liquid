@@ -1,0 +1,115 @@
+{% comment %}
+  Did You Know Footer Card — Recharge Affinity Integration
+  Displays a compact horizontal educational card with eyebrow, headline,
+  icon circle, and learn-more link. No media image/video — text-only layout.
+  Pure markup partial — rendered INSIDE the "subscriptions.footer" slot template
+  in recharge-affinity-homepage.liquid.
+  Uses .cf-dyk-footer BEM prefix to avoid CSS collision with the existing
+  .cf-did-you-know sidebar card (both render in the same DOM on Subscriptions tab).
+{% endcomment %}
+
+<style>
+  .cf-dyk-footer {
+    border-radius: 8px;
+    overflow: hidden;
+    background-color: #E6F0F8;
+  }
+
+  .cf-dyk-footer__text-lockup {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 20px 20px 20px 16px;
+    overflow: hidden;
+  }
+
+  .cf-dyk-footer__heading {
+    display: flex;
+    flex-direction: row;
+    gap: 24px;
+  }
+
+  .cf-dyk-footer__heading-lockup {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    justify-content: flex-end;
+    padding-top: 8px;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .cf-dyk-footer__eyebrow {
+    font-family: 'FT System Mono', monospace;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 20px;
+    letter-spacing: 0.56px;
+    text-transform: uppercase;
+    color: #202635;
+    margin: 0;
+  }
+
+  .cf-dyk-footer__headline {
+    font-family: 'FT System', var(--font-body--family), sans-serif;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 22px;
+    color: #202635;
+    margin: 0;
+  }
+
+  .cf-dyk-footer__icon {
+    width: 40px;
+    height: 40px;
+    flex-shrink: 0;
+  }
+
+  .cf-dyk-footer__icon svg {
+    width: 40px;
+    height: 40px;
+    display: block;
+  }
+
+  .cf-dyk-footer__learn-more {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding-bottom: 4px;
+    border-bottom: 1px solid #202635;
+    text-decoration: none;
+    font-family: 'FT System', var(--font-body--family), sans-serif;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 20px;
+    color: #202635;
+    width: fit-content;
+  }
+
+  .cf-dyk-footer__learn-more-arrow {
+    font-family: Inter, var(--font-body--family), sans-serif;
+    font-weight: 500;
+    font-size: 11px;
+    line-height: 13px;
+    text-align: center;
+    color: #202635;
+  }
+</style>
+
+<div class="cf-dyk-footer">
+  <div class="cf-dyk-footer__text-lockup">
+    <div class="cf-dyk-footer__heading">
+      <div class="cf-dyk-footer__heading-lockup">
+        <p class="cf-dyk-footer__eyebrow">Did you know?</p>
+        <p class="cf-dyk-footer__headline">In addition to protecting you from harmful contaminants in your water, your pitcher filter subscription has saved 800 plastic water bottles from the landfill.</p>
+      </div>
+      <div class="cf-dyk-footer__icon">
+        {{ 'icon.svg' | inline_asset_content }}
+      </div>
+    </div>
+    <a href="#" class="cf-dyk-footer__learn-more">
+      Learn more
+      <span class="cf-dyk-footer__learn-more-arrow">&rarr;</span>
+    </a>
+  </div>
+</div>
