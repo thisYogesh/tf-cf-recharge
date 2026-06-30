@@ -153,14 +153,6 @@
     gap: 8px !important;
   }
 
-  /* Element sequence inside the lockup: title → quantity × price → badge.
-     Recharge renders the frequency badge between title and price, so push
-     it to the end. (order only takes effect because the lockup above is a
-     flex column.) */
-  body.cf-page-subscriptions .recharge-component-subscription-item .cf-freq-badge {
-    order: 9 !important;
-  }
-
   /* Bundle contents — drop below the main row, full width */
   body.cf-page-subscriptions .recharge-component-subscription-item > [class*="bundle" i] {
     order: 10 !important;
@@ -635,13 +627,17 @@
   }
 
   /**
-   * Find frequency text elements (e.g. "Every 2 months")
-   * and add .cf-freq-badge class for pill styling
+   * Find frequency text elements (e.g. "Every 2 months", "Every month")
+   * and add .cf-freq-badge class for pill styling, then move the badge to
+   * the bottom of the item's details lockup (below the qty × price line).
+   * Recharge renders the badge inline with the title, so a DOM move is
+   * required — CSS `order` cannot cross flex containers.
    */
   function addFreqBadges() {
     if (!isSubsPage) return;
 
-    var freqRe = /^every\s+\d+\s+(month|week|day|year)s?$/i;
+    /* The number is optional: matches "Every month" and "Every 2 months" */
+    var freqRe = /^every\s+(\d+\s+)?(day|week|month|year)s?$/i;
     var candidates = document.querySelectorAll(
       '.recharge-text, .recharge-text-p1, .recharge-text-p2, .recharge-text-p3, ' +
       '.recharge-text-p4, .recharge-text-p5, span, small, p, div'
@@ -657,9 +653,47 @@
       if (el.closest('.cf-edu-card')) continue;
 
       var t = el.textContent.trim();
-      if (freqRe.test(t)) {
-        el.classList.add('cf-freq-badge');
+      if (!freqRe.test(t)) continue;
+
+      el.classList.add('cf-freq-badge');
+      moveBadgeToLockupEnd(el);
+    }
+  }
+
+  /**
+   * Move a frequency badge to sit at the end of its item's details lockup
+   * (the direct child of .recharge-component-subscription-item that contains
+   * it), placed just before the "Edit" link when present.
+   * @param {HTMLElement} badge
+   */
+  function moveBadgeToLockupEnd(badge) {
+    var item = badge.closest('.recharge-component-subscription-item');
+    if (!item) return;
+
+    /* Walk up to the lockup = direct child of the item that contains badge */
+    var lockup = badge;
+    while (lockup.parentElement && lockup.parentElement !== item) {
+      lockup = lockup.parentElement;
+    }
+    if (!lockup || lockup === badge || lockup.parentElement !== item) return;
+
+    /* Find an "Edit" control that is a direct child of the lockup */
+    var editAnchor = null;
+    var controls = lockup.querySelectorAll('a, button');
+    for (var j = 0; j < controls.length; j++) {
+      if (/^\s*edit\b/i.test(controls[j].textContent) &&
+          controls[j].parentElement === lockup) {
+        editAnchor = controls[j];
+        break;
       }
+    }
+
+    if (editAnchor) {
+      if (badge.nextElementSibling === editAnchor && badge.parentElement === lockup) return;
+      lockup.insertBefore(badge, editAnchor);
+    } else {
+      if (badge === lockup.lastElementChild) return;
+      lockup.appendChild(badge);
     }
   }
 
