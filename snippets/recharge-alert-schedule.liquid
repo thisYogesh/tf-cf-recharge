@@ -65,12 +65,27 @@
   }
 </style>
 
+{% comment %}
+  Content is driven by the `alert_recharge` metaobject (fields: heading,
+  description). Hardcoded fallbacks below render when no entry is published.
+  shop.metaobjects.*.values is a lazy drop — must be iterated (limit: 1); fields
+  are read directly (entry.heading.value), never via .fields.
+{% endcomment %}
+{% liquid
+  assign alert_heading = 'Water Contaminant Alert for 84098'
+  assign alert_description = "Our filters are actively protecting your home's water supply from 25 harmful contaminants. Ensure timely replacement to maintain protection."
+  for entry in shop.metaobjects.alert_recharge.values limit: 1
+    assign alert_heading = entry.heading.value | default: alert_heading
+    assign alert_description = entry.description.value | default: alert_description
+  endfor
+%}
+
 <div class="cf-alert-schedule">
   <div class="cf-alert-schedule__header">
     <span class="cf-alert-schedule__icon">
       {{ 'icon-warning.svg' | inline_asset_content }}
     </span>
-    <p class="cf-alert-schedule__title">Water Contaminant Alert for 84098</p>
+    <p class="cf-alert-schedule__title">{{ alert_heading }}</p>
   </div>
-  <p class="cf-alert-schedule__body">Our filters are actively protecting your home's water supply from 25 harmful contaminants. Ensure timely replacement to maintain protection.</p>
+  <p class="cf-alert-schedule__body">{{ alert_description | newline_to_br }}</p>
 </div>
