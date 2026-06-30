@@ -33,17 +33,25 @@
     'Account'
   ];
 
-  /* Find the tab-navigation row: the first shared ancestor that contains at
-     least two of the known tab buttons. */
+  /* Find the tab-navigation row. The portal may render tabs as <a>, <button>,
+     or role-based divs, so match across a broad clickable set — but stay
+     clickable so we never match the page <h1> (which can read "Subscriptions"
+     too). The nav row is the lowest ancestor that contains every matched tab. */
   function findNavRow() {
-    var clickable = document.querySelectorAll('a, button');
+    var clickable = document.querySelectorAll(
+      'a, button, [role="tab"], [role="button"], [role="link"]'
+    );
     var tabs = [];
     for (var i = 0; i < clickable.length; i++) {
-      var text = (clickable[i].textContent || '').trim();
-      if (TAB_LABELS.indexOf(text) !== -1) tabs.push(clickable[i]);
+      var text = (clickable[i].textContent || '').replace(/\s+/g, ' ').trim();
+      if (TAB_LABELS.indexOf(text) !== -1 && tabs.indexOf(clickable[i]) === -1) {
+        tabs.push(clickable[i]);
+      }
     }
     if (tabs.length < 2) return null;
 
+    /* Climb from the first tab until an ancestor contains ALL matched tabs —
+       that ancestor is the nav row. */
     var node = tabs[0];
     while (node && node.parentElement) {
       var parent = node.parentElement;
@@ -51,7 +59,7 @@
       for (var j = 0; j < tabs.length; j++) {
         if (parent.contains(tabs[j])) count++;
       }
-      if (count >= 2) return parent;
+      if (count === tabs.length) return parent;
       node = parent;
     }
     return null;
