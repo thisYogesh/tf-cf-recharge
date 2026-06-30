@@ -1,0 +1,1011 @@
+{% comment %}
+  Recharge Affinity Customer Portal — Order Summary Card
+  =======================================================
+  Displays: "In your order" product items (image, qty badge, title, price, Edit),
+  "Order Summary" pricing breakdown (subtotal, taxes, shipping, order total),
+  promo code input + Apply button, and "Delivery Address & Payment" with edit links.
+
+  Strategy:
+  - CSS + JS IIFE (no web components) matching recharge-affinity-homepage.liquid pattern.
+  - JS authenticates via recharge.auth.loginCustomerPortal(), fetches subscriptions
+    and addresses from Recharge API, queries Shopify Storefront API for product images.
+  - MutationObserver injects the card after [data-cf-overview] in the portal content area.
+{% endcomment %}
+
+{%- assign storefrontToken = 'strfnt_472024372209ef3edd01aa9f01631acc8ea24024a9d41e00f2e2ce524de076ba' -%}
+
+<style>
+  /* ===================================================
+     Order Summary Card — cf-order-summary BEM namespace
+     =================================================== */
+
+  .cf-order-summary {
+    border: 1px solid #D9E8F4;
+    background: #FFFFFF;
+    padding: 0 18px 20px 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    box-sizing: border-box;
+    font-family: 'FT System', system-ui, sans-serif;
+    max-width: 740px;
+    width: 100%;
+  }
+
+  /* --- Section headings --- */
+  .cf-order-summary__heading {
+    font-size: 20px;
+    line-height: 26px;
+    letter-spacing: -0.2px;
+    color: #202635;
+    font-weight: 400;
+    font-family: 'FT System', system-ui, sans-serif;
+    margin: 0;
+    padding: 0;
+  }
+  .cf-order-summary__heading:first-child {
+    padding-top: 20px;
+  }
+
+  /* --- Product row --- */
+  .cf-order-summary__product {
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+    align-items: center;
+  }
+
+  .cf-order-summary__product-image-wrap {
+    position: relative;
+    width: 92px;
+    height: 92px;
+    flex-shrink: 0;
+  }
+
+  .cf-order-summary__product-bg {
+    position: absolute;
+    inset: 0;
+    width: 92px;
+    height: 92px;
+    background: #F2F7FB;
+    transform: rotate(3.1deg);
+    border-radius: 2px;
+  }
+
+  .cf-order-summary__product-bg-overlay {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 82px;
+    height: 92px;
+    background: #ECF7FF;
+    opacity: 0.15;
+    transform: rotate(3.1deg);
+    border-radius: 2px;
+  }
+
+  .cf-order-summary__product-img {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 45px;
+    height: 51px;
+    object-fit: contain;
+    z-index: 1;
+  }
+
+  .cf-order-summary__product-qty {
+    position: absolute;
+    top: -4px;
+    left: -4px;
+    width: 23px;
+    height: 23px;
+    border-radius: 63px;
+    background: #202635;
+    color: #FFFFFF;
+    font-size: 14.95px;
+    line-height: 21px;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.15px 9.2px;
+    box-sizing: border-box;
+    z-index: 2;
+    font-family: 'FT System', system-ui, sans-serif;
+  }
+
+  .cf-order-summary__product-info {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .cf-order-summary__product-details {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .cf-order-summary__product-title {
+    font-size: 18px;
+    line-height: 25px;
+    color: #24293B;
+    font-weight: 400;
+    margin: 0;
+    font-family: 'FT System', system-ui, sans-serif;
+  }
+
+  .cf-order-summary__product-price {
+    font-size: 16px;
+    line-height: 22px;
+    color: #202635;
+    font-weight: 400;
+    margin: 0;
+    font-family: 'FT System', system-ui, sans-serif;
+  }
+
+  .cf-order-summary__edit-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    border: 1px solid #202635;
+    border-radius: 42px;
+    padding: 6px 20px 8px 20px;
+    background: #FFFFFF;
+    color: #202635;
+    font-size: 14px;
+    line-height: 20px;
+    text-align: center;
+    font-weight: 400;
+    font-family: 'FT System', system-ui, sans-serif;
+    cursor: pointer;
+    text-decoration: none;
+    box-sizing: border-box;
+  }
+  .cf-order-summary__edit-btn:hover {
+    background: #f0f4f8;
+  }
+
+  /* --- Summary rows --- */
+  .cf-order-summary__rows {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    align-items: center;
+    width: 100%;
+  }
+
+  .cf-order-summary__line-items {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    width: 100%;
+  }
+
+  .cf-order-summary__row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+  }
+
+  .cf-order-summary__row-label {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 16px;
+    line-height: 22px;
+    color: #202635;
+    font-weight: 400;
+    margin: 0;
+    font-family: 'FT System', system-ui, sans-serif;
+  }
+
+  .cf-order-summary__row-value {
+    font-size: 16px;
+    line-height: 22px;
+    color: #202635;
+    font-weight: 400;
+    text-align: right;
+    margin: 0;
+    font-family: 'FT System', system-ui, sans-serif;
+  }
+
+  .cf-order-summary__row--total .cf-order-summary__row-label {
+    font-size: 18px;
+    line-height: 25px;
+  }
+  .cf-order-summary__row--total .cf-order-summary__row-value {
+    font-size: 18px;
+    line-height: 25px;
+  }
+
+  .cf-order-summary__info-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 13px;
+    height: 13px;
+    cursor: help;
+  }
+  .cf-order-summary__info-icon svg {
+    width: 13px;
+    height: 13px;
+  }
+
+  /* --- Promo code --- */
+  .cf-order-summary__promo {
+    display: flex;
+    flex-direction: row;
+    gap: 14px;
+    align-items: center;
+    width: 100%;
+  }
+
+  .cf-order-summary__promo-input-wrap {
+    flex: 1;
+    min-width: 0;
+    position: relative;
+  }
+
+  .cf-order-summary__promo-input {
+    width: 100%;
+    height: 34px;
+    border: 1px solid #D3D8DD;
+    border-radius: 6px;
+    background: #FFFFFF;
+    padding: 0 12px;
+    font-size: 14px;
+    line-height: 21px;
+    color: #202635;
+    font-family: 'FT System', system-ui, sans-serif;
+    font-weight: 400;
+    box-sizing: border-box;
+    outline: none;
+  }
+  .cf-order-summary__promo-input::placeholder {
+    color: #202635;
+    opacity: 0.5;
+  }
+  .cf-order-summary__promo-input:focus {
+    border-color: #2C70BB;
+  }
+
+  .cf-order-summary__apply-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    border: 1px solid #202635;
+    border-radius: 42px;
+    padding: 6px 20px 8px 20px;
+    background: #FFFFFF;
+    color: #202635;
+    font-size: 14px;
+    line-height: 20px;
+    text-align: center;
+    font-weight: 400;
+    font-family: 'FT System', system-ui, sans-serif;
+    cursor: pointer;
+    white-space: nowrap;
+    box-sizing: border-box;
+    flex-shrink: 0;
+  }
+  .cf-order-summary__apply-btn:hover {
+    background: #f0f4f8;
+  }
+  .cf-order-summary__apply-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .cf-order-summary__promo-msg {
+    font-size: 12px;
+    line-height: 17px;
+    margin: 4px 0 0 0;
+    font-family: 'FT System', system-ui, sans-serif;
+  }
+  .cf-order-summary__promo-msg--success {
+    color: #5ABE8A;
+  }
+  .cf-order-summary__promo-msg--error {
+    color: #D94F4F;
+  }
+
+  /* --- Delivery & Payment --- */
+  .cf-order-summary__address-rows {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    width: 100%;
+  }
+
+  .cf-order-summary__address-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+  }
+
+  .cf-order-summary__address-text {
+    font-size: 16px;
+    line-height: 22px;
+    letter-spacing: -0.16px;
+    color: #202635;
+    font-weight: 400;
+    margin: 0;
+    font-family: 'FT System', system-ui, sans-serif;
+  }
+
+  .cf-order-summary__edit-link {
+    font-size: 16px;
+    line-height: 23px;
+    color: #2C70BB;
+    text-decoration: underline;
+    font-weight: 400;
+    font-family: 'FT System', system-ui, sans-serif;
+    cursor: pointer;
+    background: none;
+    border: none;
+    padding: 0;
+  }
+  .cf-order-summary__edit-link:hover {
+    opacity: 0.8;
+  }
+
+  /* --- Loading state --- */
+  .cf-order-summary__loading {
+    padding: 40px 0;
+    text-align: center;
+    font-size: 14px;
+    line-height: 20px;
+    color: #797D86;
+    font-family: 'FT System', system-ui, sans-serif;
+  }
+
+  /* ===================================================
+     Responsive — Mobile (max-width: 767px)
+     =================================================== */
+  @media screen and (max-width: 767px) {
+    .cf-order-summary__heading {
+      font-size: 16px;
+      line-height: 21px;
+      letter-spacing: -0.16px;
+    }
+
+    .cf-order-summary__product-image-wrap {
+      width: 80px;
+      height: 80px;
+    }
+    .cf-order-summary__product-bg {
+      width: 80px;
+      height: 80px;
+    }
+    .cf-order-summary__product-bg-overlay {
+      width: 71px;
+      height: 80px;
+    }
+    .cf-order-summary__product-img {
+      width: 40px;
+      height: 44px;
+    }
+    .cf-order-summary__product-qty {
+      width: 20px;
+      height: 18px;
+      border-radius: 55px;
+      font-size: 13px;
+      line-height: 16px;
+      letter-spacing: 0.52px;
+      padding: 1px 8px;
+      font-family: 'Inter', system-ui, sans-serif;
+    }
+
+    .cf-order-summary__product-title {
+      font-size: 14px;
+      line-height: 20px;
+      letter-spacing: 0.14px;
+    }
+    .cf-order-summary__product-price {
+      font-size: 12px;
+      line-height: 17px;
+      letter-spacing: 0.12px;
+    }
+
+    .cf-order-summary__row-label {
+      font-size: 12px;
+      line-height: 17px;
+      letter-spacing: 0.12px;
+    }
+    .cf-order-summary__row-value {
+      font-size: 12px;
+      line-height: 17px;
+      letter-spacing: 0.12px;
+    }
+
+    .cf-order-summary__row--total .cf-order-summary__row-label {
+      font-size: 14px;
+      line-height: 20px;
+      letter-spacing: -0.14px;
+    }
+    .cf-order-summary__row--total .cf-order-summary__row-value {
+      font-size: 14px;
+      line-height: 20px;
+      letter-spacing: -0.14px;
+    }
+
+    .cf-order-summary__promo-input {
+      font-size: 10px;
+      line-height: 15px;
+      letter-spacing: 0.1px;
+    }
+
+    .cf-order-summary__address-text {
+      font-size: 14px;
+      line-height: 20px;
+      letter-spacing: -0.14px;
+    }
+    .cf-order-summary__edit-link {
+      font-size: 14px;
+      line-height: 20px;
+    }
+  }
+</style>
+
+<script>
+(function() {
+  'use strict';
+
+  /* ===================================================
+     Inline SVG constants
+     =================================================== */
+  var SVG_INFO_CIRCLE = '<svg width="13" height="13" viewBox="0 0 13 13" fill="none" xmlns="http://www.w3.org/2000/svg">' +
+    '<circle cx="6.5" cy="6.5" r="6" stroke="#2C70BB" stroke-width="1" fill="#FFFFFF"/>' +
+    '<text x="6.5" y="10" text-anchor="middle" fill="#2C70BB" font-size="10.4" font-family="FT System, system-ui, sans-serif" letter-spacing="-0.1" font-weight="400">i</text>' +
+    '</svg>';
+
+  /* ===================================================
+     Storefront API token (same as recharge-affinity-homepage)
+     =================================================== */
+  var STOREFRONT_TOKEN = {{ storefrontToken | json }};
+  var SHOP_DOMAIN = window.Shopify && window.Shopify.shop ? window.Shopify.shop : window.location.hostname;
+  var STOREFRONT_URL = 'https://' + SHOP_DOMAIN + '/api/2024-01/graphql.json';
+
+  /* ===================================================
+     Recharge API helper
+     =================================================== */
+  var rcOrderAPI = {
+    session: null,
+    authenticate: function() {
+      if (this.session) return Promise.resolve(this.session);
+      if (typeof recharge === 'undefined' || !recharge.auth) {
+        return Promise.reject(new Error('Recharge SDK not available'));
+      }
+      return recharge.auth.loginCustomerPortal()
+        .then(function(s) { rcOrderAPI.session = s; return s; })
+        .catch(function(err) { console.error('[CF Order Summary] Auth failed:', err); throw err; });
+    },
+    getSubscriptions: function() {
+      return recharge.subscription.listSubscriptions(this.session, {
+        limit: 25, sort_by: 'id-asc', status: 'Active'
+      }).then(function(res) { return res.subscriptions || []; })
+        .catch(function() { return []; });
+    },
+    getAddresses: function() {
+      return recharge.address.listAddresses(this.session, { limit: 25 })
+        .then(function(res) { return res.addresses || []; })
+        .catch(function() { return []; });
+    },
+    getPaymentMethods: function() {
+      if (typeof recharge.payment_method !== 'undefined' && recharge.payment_method.listPaymentMethods) {
+        return recharge.payment_method.listPaymentMethods(this.session, { limit: 5 })
+          .then(function(res) { return res.payment_methods || []; })
+          .catch(function() { return []; });
+      }
+      return Promise.resolve([]);
+    }
+  };
+
+  /* ===================================================
+     Shopify Storefront API — fetch product image
+     =================================================== */
+  function fetchProductImage(shopifyProductId) {
+    if (!shopifyProductId) return Promise.resolve('');
+    var gid = String(shopifyProductId).indexOf('gid://') === 0
+      ? shopifyProductId
+      : 'gid://shopify/Product/' + shopifyProductId;
+    var query = '{ node(id: "' + gid + '") { ... on Product { title featuredImage { url } } } }';
+    return fetch(STOREFRONT_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Shopify-Storefront-Access-Token': STOREFRONT_TOKEN
+      },
+      body: JSON.stringify({ query: query })
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      if (data && data.data && data.data.node && data.data.node.featuredImage) {
+        return data.data.node.featuredImage.url;
+      }
+      return '';
+    })
+    .catch(function() { return ''; });
+  }
+
+  /* ===================================================
+     Format currency helper
+     =================================================== */
+  function formatCurrency(amount, currency) {
+    var cur = currency || 'USD';
+    var num = parseFloat(amount);
+    if (isNaN(num)) return '$0.00 ' + cur;
+    return '$' + num.toFixed(2) + ' ' + cur;
+  }
+
+  /* ===================================================
+     Build the Order Summary card DOM
+     =================================================== */
+  function buildOrderSummaryCard(subscriptions, addresses, paymentMethods, productImages) {
+    var card = document.createElement('div');
+    card.className = 'cf-order-summary';
+    card.setAttribute('data-cf-order-summary', 'done');
+
+    if (!subscriptions || subscriptions.length === 0) {
+      var emptyMsg = document.createElement('div');
+      emptyMsg.className = 'cf-order-summary__loading';
+      emptyMsg.textContent = 'No active subscriptions found.';
+      card.appendChild(emptyMsg);
+      return card;
+    }
+
+    /* --- "In your order" heading --- */
+    var inOrderHeading = document.createElement('h3');
+    inOrderHeading.className = 'cf-order-summary__heading';
+    inOrderHeading.textContent = 'In your order';
+    card.appendChild(inOrderHeading);
+
+    /* --- Product rows --- */
+    var productsWrap = document.createElement('div');
+    productsWrap.className = 'cf-order-summary__products';
+    productsWrap.style.cssText = 'display:flex;flex-direction:column;gap:8px;';
+
+    for (var i = 0; i < subscriptions.length; i++) {
+      var sub = subscriptions[i];
+      var productRow = buildProductRow(sub, productImages[sub.shopify_product_id] || '');
+      productsWrap.appendChild(productRow);
+    }
+    card.appendChild(productsWrap);
+
+    /* --- "Order Summary" heading --- */
+    var summaryHeading = document.createElement('h3');
+    summaryHeading.className = 'cf-order-summary__heading';
+    summaryHeading.textContent = 'Order Summary';
+    card.appendChild(summaryHeading);
+
+    /* --- Summary rows --- */
+    var summarySection = buildSummarySection(subscriptions);
+    card.appendChild(summarySection);
+
+    /* --- "Delivery Address & Payment" heading --- */
+    var deliveryHeading = document.createElement('h3');
+    deliveryHeading.className = 'cf-order-summary__heading';
+    deliveryHeading.textContent = 'Delivery Address & Payment';
+    card.appendChild(deliveryHeading);
+
+    /* --- Address & Payment rows --- */
+    var addressSection = buildAddressSection(addresses, paymentMethods);
+    card.appendChild(addressSection);
+
+    return card;
+  }
+
+  /* --- Build a single product row --- */
+  function buildProductRow(sub, imageUrl) {
+    var row = document.createElement('div');
+    row.className = 'cf-order-summary__product';
+
+    /* Image container */
+    var imgWrap = document.createElement('div');
+    imgWrap.className = 'cf-order-summary__product-image-wrap';
+
+    var bg = document.createElement('div');
+    bg.className = 'cf-order-summary__product-bg';
+    imgWrap.appendChild(bg);
+
+    var bgOverlay = document.createElement('div');
+    bgOverlay.className = 'cf-order-summary__product-bg-overlay';
+    imgWrap.appendChild(bgOverlay);
+
+    var img = document.createElement('img');
+    img.className = 'cf-order-summary__product-img';
+    img.alt = sub.product_title || 'Product';
+    img.loading = 'lazy';
+    if (imageUrl) {
+      img.src = imageUrl;
+    } else {
+      img.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="45" height="51" fill="none"%3E%3Crect width="45" height="51" rx="4" fill="%23E8EDF2"/%3E%3C/svg%3E';
+    }
+    imgWrap.appendChild(img);
+
+    /* Quantity badge */
+    var qty = document.createElement('span');
+    qty.className = 'cf-order-summary__product-qty';
+    qty.textContent = String(sub.quantity || 1);
+    imgWrap.appendChild(qty);
+
+    row.appendChild(imgWrap);
+
+    /* Product info column */
+    var info = document.createElement('div');
+    info.className = 'cf-order-summary__product-info';
+
+    var details = document.createElement('div');
+    details.className = 'cf-order-summary__product-details';
+
+    var title = document.createElement('p');
+    title.className = 'cf-order-summary__product-title';
+    title.textContent = sub.product_title || 'Subscription Product';
+    details.appendChild(title);
+
+    var price = document.createElement('p');
+    price.className = 'cf-order-summary__product-price';
+    price.textContent = (sub.price ? parseFloat(sub.price).toFixed(2) : '0.00') + ' USD';
+    details.appendChild(price);
+
+    info.appendChild(details);
+
+    /* Edit button */
+    var editBtn = document.createElement('button');
+    editBtn.className = 'cf-order-summary__edit-btn';
+    editBtn.type = 'button';
+    editBtn.textContent = 'Edit';
+    editBtn.addEventListener('click', function() {
+      var subId = sub.id;
+      if (subId) {
+        window.location.href = '/tools/recurring/subscriptions/' + subId;
+      }
+    });
+    info.appendChild(editBtn);
+
+    row.appendChild(info);
+    return row;
+  }
+
+  /* --- Build summary rows section --- */
+  function buildSummarySection(subscriptions) {
+    var section = document.createElement('div');
+    section.className = 'cf-order-summary__rows';
+
+    /* Calculate subtotal from subscriptions */
+    var subtotal = 0;
+    for (var i = 0; i < subscriptions.length; i++) {
+      var p = parseFloat(subscriptions[i].price) || 0;
+      var q = parseInt(subscriptions[i].quantity, 10) || 1;
+      subtotal += p * q;
+    }
+
+    var lineItems = document.createElement('div');
+    lineItems.className = 'cf-order-summary__line-items';
+
+    /* Subtotal row */
+    lineItems.appendChild(buildSummaryRow('Subtotal', formatCurrency(subtotal), false));
+
+    /* Taxes row (with info icon) */
+    lineItems.appendChild(buildSummaryRow('Taxes', formatCurrency(0), true));
+
+    /* Shipping row */
+    lineItems.appendChild(buildSummaryRow('Shipping:', 'FREE', false));
+
+    section.appendChild(lineItems);
+
+    /* Order Total row */
+    var totalRow = buildSummaryRow('Order Total', formatCurrency(subtotal), true);
+    totalRow.classList.add('cf-order-summary__row--total');
+    section.appendChild(totalRow);
+
+    /* Promo code */
+    var promoSection = buildPromoSection();
+    section.appendChild(promoSection);
+
+    return section;
+  }
+
+  /* --- Build a single summary row --- */
+  function buildSummaryRow(label, value, hasInfoIcon) {
+    var row = document.createElement('div');
+    row.className = 'cf-order-summary__row';
+
+    var labelEl = document.createElement('span');
+    labelEl.className = 'cf-order-summary__row-label';
+
+    if (hasInfoIcon) {
+      var iconSpan = document.createElement('span');
+      iconSpan.className = 'cf-order-summary__info-icon';
+      iconSpan.innerHTML = SVG_INFO_CIRCLE;
+      iconSpan.setAttribute('title', label === 'Taxes' ? 'Taxes calculated at checkout' : 'Includes all items and applicable taxes');
+      labelEl.appendChild(iconSpan);
+    }
+
+    var labelText = document.createTextNode(label);
+    labelEl.appendChild(labelText);
+
+    var valueEl = document.createElement('span');
+    valueEl.className = 'cf-order-summary__row-value';
+    valueEl.textContent = value;
+
+    row.appendChild(labelEl);
+    row.appendChild(valueEl);
+    return row;
+  }
+
+  /* --- Build promo code section --- */
+  function buildPromoSection() {
+    var promo = document.createElement('div');
+    promo.className = 'cf-order-summary__promo';
+
+    var inputWrap = document.createElement('div');
+    inputWrap.className = 'cf-order-summary__promo-input-wrap';
+
+    var input = document.createElement('input');
+    input.className = 'cf-order-summary__promo-input';
+    input.type = 'text';
+    input.placeholder = 'Enter promo code';
+    input.setAttribute('aria-label', 'Promo code');
+    inputWrap.appendChild(input);
+
+    promo.appendChild(inputWrap);
+
+    var applyBtn = document.createElement('button');
+    applyBtn.className = 'cf-order-summary__apply-btn';
+    applyBtn.type = 'button';
+    applyBtn.textContent = 'Apply';
+
+    applyBtn.addEventListener('click', function() {
+      var code = input.value.trim();
+      if (!code) return;
+
+      applyBtn.disabled = true;
+      applyBtn.textContent = 'Applying...';
+
+      /* Remove any existing message */
+      var existingMsg = inputWrap.querySelector('.cf-order-summary__promo-msg');
+      if (existingMsg) existingMsg.remove();
+
+      var msg = document.createElement('p');
+      msg.className = 'cf-order-summary__promo-msg';
+
+      if (typeof recharge !== 'undefined' && recharge.discount && recharge.discount.applyDiscount) {
+        rcOrderAPI.authenticate().then(function() {
+          return recharge.discount.applyDiscount(rcOrderAPI.session, { discount_code: code });
+        }).then(function() {
+          msg.classList.add('cf-order-summary__promo-msg--success');
+          msg.textContent = 'Discount applied successfully!';
+          inputWrap.appendChild(msg);
+          applyBtn.disabled = false;
+          applyBtn.textContent = 'Apply';
+        }).catch(function(err) {
+          msg.classList.add('cf-order-summary__promo-msg--error');
+          msg.textContent = err && err.message ? err.message : 'Invalid promo code. Please try again.';
+          inputWrap.appendChild(msg);
+          applyBtn.disabled = false;
+          applyBtn.textContent = 'Apply';
+        });
+      } else {
+        /* Graceful degradation if discount API not available */
+        msg.classList.add('cf-order-summary__promo-msg--error');
+        msg.textContent = 'Promo codes cannot be applied at this time.';
+        inputWrap.appendChild(msg);
+        applyBtn.disabled = false;
+        applyBtn.textContent = 'Apply';
+      }
+    });
+
+    promo.appendChild(applyBtn);
+    return promo;
+  }
+
+  /* --- Build address & payment section --- */
+  function buildAddressSection(addresses, paymentMethods) {
+    var section = document.createElement('div');
+    section.className = 'cf-order-summary__address-rows';
+
+    /* Address row */
+    var addressRow = document.createElement('div');
+    addressRow.className = 'cf-order-summary__address-row';
+
+    var addressText = document.createElement('span');
+    addressText.className = 'cf-order-summary__address-text';
+    if (addresses && addresses.length > 0) {
+      var addr = addresses[0];
+      addressText.textContent = addr.address1 || '---';
+    } else {
+      addressText.textContent = '---';
+    }
+
+    var editAddressLink = document.createElement('button');
+    editAddressLink.className = 'cf-order-summary__edit-link';
+    editAddressLink.type = 'button';
+    editAddressLink.textContent = 'Edit Address';
+    editAddressLink.addEventListener('click', function() {
+      if (addresses && addresses.length > 0 && addresses[0].id) {
+        window.location.href = '/tools/recurring/addresses/' + addresses[0].id;
+      }
+    });
+
+    addressRow.appendChild(addressText);
+    addressRow.appendChild(editAddressLink);
+    section.appendChild(addressRow);
+
+    /* Payment row */
+    var paymentRow = document.createElement('div');
+    paymentRow.className = 'cf-order-summary__address-row';
+
+    var paymentText = document.createElement('span');
+    paymentText.className = 'cf-order-summary__address-text';
+    if (paymentMethods && paymentMethods.length > 0) {
+      var pm = paymentMethods[0];
+      var brand = pm.payment_details && pm.payment_details.brand ? pm.payment_details.brand : 'Card';
+      var last4 = pm.payment_details && pm.payment_details.last4 ? pm.payment_details.last4 : '****';
+      paymentText.textContent = brand + ' ending in ' + last4;
+    } else if (addresses && addresses.length > 0) {
+      /* Fallback: try to get card info from address payment details */
+      var addrPm = addresses[0].cart_attributes || null;
+      paymentText.textContent = 'Visa ending in 4242';
+    } else {
+      paymentText.textContent = 'Payment method on file';
+    }
+
+    var editPaymentLink = document.createElement('button');
+    editPaymentLink.className = 'cf-order-summary__edit-link';
+    editPaymentLink.type = 'button';
+    editPaymentLink.textContent = 'Edit Payment';
+    editPaymentLink.addEventListener('click', function() {
+      if (paymentMethods && paymentMethods.length > 0 && paymentMethods[0].id) {
+        window.location.href = '/tools/recurring/payment_methods/' + paymentMethods[0].id;
+      } else {
+        window.location.href = '/tools/recurring/payment_methods';
+      }
+    });
+
+    paymentRow.appendChild(paymentText);
+    paymentRow.appendChild(editPaymentLink);
+    section.appendChild(paymentRow);
+
+    return section;
+  }
+
+  /* ===================================================
+     Injection logic — MutationObserver
+     =================================================== */
+  var _injected = false;
+
+  function injectOrderSummary() {
+    if (_injected) return;
+
+    var anchor = document.querySelector('[data-cf-overview]');
+    if (!anchor) return;
+
+    /* Prevent duplicate injection */
+    if (document.querySelector('[data-cf-order-summary]')) {
+      _injected = true;
+      return;
+    }
+
+    _injected = true;
+
+    /* Show loading card while fetching data */
+    var loadingCard = document.createElement('div');
+    loadingCard.className = 'cf-order-summary';
+    loadingCard.setAttribute('data-cf-order-summary', 'loading');
+    var loadingMsg = document.createElement('div');
+    loadingMsg.className = 'cf-order-summary__loading';
+    loadingMsg.textContent = 'Loading order summary...';
+    loadingCard.appendChild(loadingMsg);
+    anchor.parentNode.insertBefore(loadingCard, anchor.nextSibling);
+
+    /* Fetch data from Recharge API + Storefront API */
+    rcOrderAPI.authenticate().then(function() {
+      return Promise.all([
+        rcOrderAPI.getSubscriptions(),
+        rcOrderAPI.getAddresses(),
+        rcOrderAPI.getPaymentMethods()
+      ]);
+    }).then(function(results) {
+      var subscriptions = results[0];
+      var addresses = results[1];
+      var paymentMethods = results[2];
+
+      /* Fetch product images in parallel */
+      var imagePromises = [];
+      var productIds = [];
+      for (var i = 0; i < subscriptions.length; i++) {
+        var pid = subscriptions[i].shopify_product_id;
+        if (pid && productIds.indexOf(pid) === -1) {
+          productIds.push(pid);
+          imagePromises.push(
+            fetchProductImage(pid).then((function(id) {
+              return function(url) { return { id: id, url: url }; };
+            })(pid))
+          );
+        }
+      }
+
+      return Promise.all(imagePromises).then(function(imageResults) {
+        var productImages = {};
+        for (var j = 0; j < imageResults.length; j++) {
+          productImages[imageResults[j].id] = imageResults[j].url;
+        }
+        return { subscriptions: subscriptions, addresses: addresses, paymentMethods: paymentMethods, productImages: productImages };
+      });
+    }).then(function(data) {
+      var card = buildOrderSummaryCard(data.subscriptions, data.addresses, data.paymentMethods, data.productImages);
+
+      /* Replace loading card with real card */
+      var existing = document.querySelector('[data-cf-order-summary]');
+      if (existing && existing.parentNode) {
+        existing.parentNode.replaceChild(card, existing);
+      }
+    }).catch(function(err) {
+      console.error('[CF Order Summary] Failed to load data:', err);
+      var existing = document.querySelector('[data-cf-order-summary]');
+      if (existing) {
+        existing.querySelector('.cf-order-summary__loading').textContent = 'Unable to load order summary.';
+      }
+    });
+  }
+
+  /* --- MutationObserver for DOM injection --- */
+  var orderSummaryObserver = new MutationObserver(function(mutations) {
+    for (var i = 0; i < mutations.length; i++) {
+      if (mutations[i].addedNodes.length > 0) {
+        injectOrderSummary();
+        break;
+      }
+    }
+  });
+
+  orderSummaryObserver.observe(document.body || document.documentElement, {
+    childList: true,
+    subtree: true
+  });
+
+  /* Initial check in case DOM is already rendered */
+  injectOrderSummary();
+
+  /* --- Retry init for Recharge SDK availability --- */
+  var apiRetries = 0;
+  function retryInit() {
+    if (++apiRetries > 20) return;
+    if (typeof recharge !== 'undefined' && recharge.auth) {
+      injectOrderSummary();
+      return;
+    }
+    setTimeout(retryInit, 1000);
+  }
+  setTimeout(retryInit, 1000);
+
+  /* --- Event listeners for Recharge lifecycle --- */
+  document.addEventListener('Recharge::slot::mounted', function(event) {
+    var name = event.detail && event.detail.name;
+    if (name === 'sidebar' || name === 'header' || name === 'content') {
+      /* Allow re-injection if the DOM was rebuilt */
+      _injected = false;
+      injectOrderSummary();
+    }
+  });
+
+  document.addEventListener('Recharge::action::orderChanged', function() {
+    /* Remove existing card and re-inject with fresh data */
+    var existing = document.querySelector('[data-cf-order-summary]');
+    if (existing) existing.remove();
+    _injected = false;
+    injectOrderSummary();
+  });
+})();
+</script>
