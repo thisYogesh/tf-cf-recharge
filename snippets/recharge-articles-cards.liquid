@@ -1,11 +1,21 @@
 {% comment %}
   Articles Cards — Recharge Affinity Integration
-  Displays a horizontally-scrollable row of 3 blog article cards with image,
+  Displays a horizontally-scrollable row of blog article cards with image,
   eyebrow, headline, and learn-more link. Matches Figma "Articles Cards" design.
   Pure markup partial — rendered INSIDE the "subscriptions.footer" slot template
   in recharge-affinity-homepage.liquid, below the Did You Know footer card.
   Uses .cf-articles BEM prefix to avoid CSS collision with existing
   .cf-did-you-know and .cf-dyk-footer selectors.
+
+  Content is sourced from the "recharge_faq" metaobject (display name
+  "Recharge Article"), one entry per card, rendered in creation order (limit 3).
+  Fields: image, eyebrow, headline, link_url, link_label.
+  If no entries are published, the for-loop {% raw %}{% else %}{% endraw %} block
+  renders the hardcoded fallback cards so the section always displays.
+
+  NOTE: shop.metaobjects.<type>.values is a lazy drop — iterate it directly;
+  .first / [0] return blank. The {% raw %}{% else %}{% endraw %} clause fires when no
+  entries exist.
 {% endcomment %}
 
 <style>
@@ -123,77 +133,124 @@
   <div class="cf-articles__scroll">
     <div class="cf-articles__container">
 
-      <div class="cf-articles__card">
-        <div class="cf-articles__media">
-          <img
-            src="https://cdn.shopify.com/s/files/1/1000/8959/4135/files/frame-1000005553-page-1-68526545.png?v=1780582270"
-            alt="What's Really In Your Tap Water?"
-            width="312"
-            height="175"
-            loading="lazy"
-          >
-        </div>
-        <div class="cf-articles__text-lockup">
-          <div class="cf-articles__heading">
-            <div class="cf-articles__heading-lockup">
-              <p class="cf-articles__eyebrow">Water 101 &bull; 5 Min Read</p>
-              <p class="cf-articles__headline">What's Really In Your Tap Water? A Deep Dive Into Contaminants</p>
-            </div>
+      {%- for article in shop.metaobjects.recharge_faq.values limit: 3 -%}
+        {%- liquid
+          assign article_eyebrow = article.eyebrow.value
+          assign article_headline = article.headline.value
+          assign article_url = article.link_url.value | default: '#'
+          assign article_label = article.link_label.value | default: 'Read more'
+          assign article_alt = article_headline | default: 'Article' | strip_newlines
+        -%}
+        <div class="cf-articles__card">
+          <div class="cf-articles__media">
+            {%- if article.image.value != blank -%}
+              {{
+                article.image.value
+                | image_url: width: 624
+                | image_tag:
+                  loading: 'lazy',
+                  widths: '312, 468, 624',
+                  sizes: '312px',
+                  alt: article_alt
+              }}
+            {%- else -%}
+              <img
+                src="https://cdn.shopify.com/s/files/1/1000/8959/4135/files/frame-1000005553-page-1-68526545.png?v=1780582270"
+                alt="{{ article_alt | escape }}"
+                width="312"
+                height="175"
+                loading="lazy"
+              >
+            {%- endif -%}
           </div>
-          <a href="#" class="cf-articles__learn-more">
-            Read more
-            <span class="cf-articles__learn-more-arrow">&rarr;</span>
-          </a>
+          <div class="cf-articles__text-lockup">
+            <div class="cf-articles__heading">
+              <div class="cf-articles__heading-lockup">
+                <p class="cf-articles__eyebrow">{{ article_eyebrow }}</p>
+                <p class="cf-articles__headline">{{ article_headline }}</p>
+              </div>
+            </div>
+            <a href="{{ article_url }}" class="cf-articles__learn-more">
+              {{ article_label }}
+              <span class="cf-articles__learn-more-arrow">&rarr;</span>
+            </a>
+          </div>
         </div>
-      </div>
+      {%- else -%}
 
-      <div class="cf-articles__card">
-        <div class="cf-articles__media">
-          <img
-            src="https://cdn.shopify.com/s/files/1/1000/8959/4135/files/frame-1000005553-page-1-68526545.png?v=1780582270"
-            alt="2026 Top 10 States with the Dirtiest Water"
-            width="312"
-            height="175"
-            loading="lazy"
-          >
-        </div>
-        <div class="cf-articles__text-lockup">
-          <div class="cf-articles__heading">
-            <div class="cf-articles__heading-lockup">
-              <p class="cf-articles__eyebrow">Water 101 &bull; 5 Min Read</p>
-              <p class="cf-articles__headline">2026 Top 10 States with the Dirtiest Water</p>
-            </div>
+        <div class="cf-articles__card">
+          <div class="cf-articles__media">
+            <img
+              src="https://cdn.shopify.com/s/files/1/1000/8959/4135/files/frame-1000005553-page-1-68526545.png?v=1780582270"
+              alt="What's Really In Your Tap Water?"
+              width="312"
+              height="175"
+              loading="lazy"
+            >
           </div>
-          <a href="#" class="cf-articles__learn-more">
-            Read more
-            <span class="cf-articles__learn-more-arrow">&rarr;</span>
-          </a>
+          <div class="cf-articles__text-lockup">
+            <div class="cf-articles__heading">
+              <div class="cf-articles__heading-lockup">
+                <p class="cf-articles__eyebrow">Water 101 &bull; 5 Min Read</p>
+                <p class="cf-articles__headline">What's Really In Your Tap Water? A Deep Dive Into Contaminants</p>
+              </div>
+            </div>
+            <a href="#" class="cf-articles__learn-more">
+              Read more
+              <span class="cf-articles__learn-more-arrow">&rarr;</span>
+            </a>
+          </div>
         </div>
-      </div>
 
-      <div class="cf-articles__card">
-        <div class="cf-articles__media">
-          <img
-            src="https://cdn.shopify.com/s/files/1/1000/8959/4135/files/frame-1000005553-page-1-68526545.png?v=1780582270"
-            alt="What's Really In Your Tap Water?"
-            width="312"
-            height="175"
-            loading="lazy"
-          >
-        </div>
-        <div class="cf-articles__text-lockup">
-          <div class="cf-articles__heading">
-            <div class="cf-articles__heading-lockup">
-              <p class="cf-articles__eyebrow">Water 101 &bull; 5 Min Read</p>
-              <p class="cf-articles__headline">What's Really In Your Tap Water? A Deep Dive Into Contaminants</p>
-            </div>
+        <div class="cf-articles__card">
+          <div class="cf-articles__media">
+            <img
+              src="https://cdn.shopify.com/s/files/1/1000/8959/4135/files/frame-1000005553-page-1-68526545.png?v=1780582270"
+              alt="2026 Top 10 States with the Dirtiest Water"
+              width="312"
+              height="175"
+              loading="lazy"
+            >
           </div>
-          <a href="#" class="cf-articles__learn-more">
-            Read more
-            <span class="cf-articles__learn-more-arrow">&rarr;</span>
-          </a>
+          <div class="cf-articles__text-lockup">
+            <div class="cf-articles__heading">
+              <div class="cf-articles__heading-lockup">
+                <p class="cf-articles__eyebrow">Water 101 &bull; 5 Min Read</p>
+                <p class="cf-articles__headline">2026 Top 10 States with the Dirtiest Water</p>
+              </div>
+            </div>
+            <a href="#" class="cf-articles__learn-more">
+              Read more
+              <span class="cf-articles__learn-more-arrow">&rarr;</span>
+            </a>
+          </div>
         </div>
-      </div>
+
+        <div class="cf-articles__card">
+          <div class="cf-articles__media">
+            <img
+              src="https://cdn.shopify.com/s/files/1/1000/8959/4135/files/frame-1000005553-page-1-68526545.png?v=1780582270"
+              alt="What's Really In Your Tap Water?"
+              width="312"
+              height="175"
+              loading="lazy"
+            >
+          </div>
+          <div class="cf-articles__text-lockup">
+            <div class="cf-articles__heading">
+              <div class="cf-articles__heading-lockup">
+                <p class="cf-articles__eyebrow">Water 101 &bull; 5 Min Read</p>
+                <p class="cf-articles__headline">What's Really In Your Tap Water? A Deep Dive Into Contaminants</p>
+              </div>
+            </div>
+            <a href="#" class="cf-articles__learn-more">
+              Read more
+              <span class="cf-articles__learn-more-arrow">&rarr;</span>
+            </a>
+          </div>
+        </div>
+
+      {%- endfor -%}
 
     </div>
   </div>
