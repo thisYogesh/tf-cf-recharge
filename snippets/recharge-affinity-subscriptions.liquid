@@ -124,6 +124,7 @@
   body.cf-page-subscriptions .recharge-component-subscription-item {
     display: flex !important;
     flex-direction: row !important;
+    flex-wrap: wrap !important;
     align-items: center !important;
     gap: 20px !important;
     background: #FFFFFF !important;
@@ -140,11 +141,20 @@
     margin-top: 1px !important;
   }
 
-  /* Text lockup (title + price + frequency) — column, gap 8px, takes
-     remaining width so the caret is pushed to the far right */
-  body.cf-page-subscriptions .recharge-component-subscription-item > *:not(.cf-sub-img-wrap):not(svg):not(a):not(button) {
+  /* Text lockup (title + price + frequency) — takes remaining width so the
+     caret is pushed to the far right. Bundle-contents excluded (it drops
+     to its own full-width line below). */
+  body.cf-page-subscriptions .recharge-component-subscription-item > *:not(.cf-sub-img-wrap):not(svg):not(a):not(button):not([class*="bundle" i]) {
     flex: 1 1 auto !important;
     min-width: 0 !important;
+  }
+
+  /* Bundle contents — drop below the main row, full width */
+  body.cf-page-subscriptions .recharge-component-subscription-item > [class*="bundle" i] {
+    order: 10 !important;
+    flex: 0 0 100% !important;
+    width: 100% !important;
+    margin-top: 16px !important;
   }
 
   /* Product title — "Pitcher Replacement Filter" */
