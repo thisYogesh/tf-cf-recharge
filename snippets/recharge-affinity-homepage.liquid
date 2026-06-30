@@ -419,8 +419,10 @@
    BELOW the tabs, which is not where the design wants it).
    ============================================= {% endcomment %}
 
-{% comment %} Sidebar tracker is now handled by the cf-tracker-widget Web Component
-   — see snippets/affinity-tracker-widget.liquid {% endcomment %}
+{% comment %} Sidebar tracker is delivered as a Recharge Affinity Custom Extension
+   (uploaded in the customizer) — see assets/cf-tracker-widget-extension.js.
+   The old theme-hosted slot path (affinity-tracker-widget.liquid + recharge-slot-injector.js)
+   was removed. {% endcomment %}
 
 {% comment %} =============================================
    SLOT: Overview Footer — Upsell Placeholder
