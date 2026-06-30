@@ -2,10 +2,9 @@
   Did You Know — Manual Sidebar Injection (Recharge Affinity)
   ===========================================================
   The Recharge Affinity portal renders its sidebar as
-  [data-testid="sidebar-container"], which the generic recharge-slot-injector.js
-  does not match (it only looks for [data-slot] / [data-recharge-slot-target] /
-  [data-rc-slot]). As a result the "*.sidebar" slot template never reaches the
-  real sidebar and the Did You Know card never appears.
+  [data-testid="sidebar-container"], which the native "*.sidebar" slot mechanism
+  does not reliably reach. As a result a "*.sidebar" slot template never reaches
+  the real sidebar and the Did You Know card never appears.
 
   This snippet injects the Did You Know card directly into the sidebar container
   as a SIBLING (last child) of whatever extension div Recharge already renders

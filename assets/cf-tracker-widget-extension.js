@@ -859,14 +859,13 @@ class CfTrackerWidget extends HTMLElement {
     }).then((res) => (res && res.subscriptions) || []).catch(() => []);
   }
 
-  // Section 1 — eligibility.
+  // Section 1 — eligibility (gate removed): render for ANY active subscription.
+  // Previously this required product_title to contain ELIGIBLE_PRODUCT_KEYWORD;
+  // now it simply returns the first active subscription so the widget shows up
+  // on any product.
   _findEligible(subs) {
-    if (!Array.isArray(subs)) return null;
-    const keyword = lc(ELIGIBLE_PRODUCT_KEYWORD);
-    for (let i = 0; i < subs.length; i++) {
-      if (lc(subs[i] && subs[i].product_title).indexOf(keyword) !== -1) return subs[i];
-    }
-    return null;
+    if (!Array.isArray(subs) || !subs.length) return null;
+    return subs[0];
   }
 
   _loadFromRecharge(rc) {
