@@ -1,97 +1,89 @@
 {% comment %}
   Water Contaminant Alert — Manual Injection ABOVE the portal tab navigation
   ==========================================================================
-  The Recharge Affinity portal renders its primary tab navigation
-  (Next order / Subscriptions / Order history / Upcoming orders / Account)
-  ABOVE the per-page ".header" slot. A slot template therefore can only place
-  content BELOW the tabs.
+  The Recharge Affinity portal renders its primary tab navigation as a
+  [role="tablist"] of [role="tab"] items
+  (e.g. data-testid="portal-nav-item-subscriptions_navigation_link"), and the
+  active tab carries aria-selected="true". The per-page ".header" slot renders
+  BELOW that tablist, so a slot cannot place content above the tabs.
 
-  To position the alert ABOVE the tab buttons, this snippet injects the alert
-  card as the sibling immediately preceding the tab-navigation row. The nav row
-  is located by text-matching the known tab labels and walking up to the first
-  shared parent — no dependency on Recharge's internal class names / testids.
+  This snippet injects the alert card as the sibling immediately preceding the
+  tablist, and shows it ONLY while the active tab is one of the trigger tabs
+  (Subscriptions / Upcoming orders). On any other tab the card is removed.
 
-  Injection is idempotent (skips if a .cf-alert-schedule already exists) and a
-  MutationObserver re-runs it because the portal is a SPA that re-renders on tab
-  changes. Rendered from layout/theme.liquid when the path contains
-  /tools/recurring.
+  The portal is a SPA: a MutationObserver watches childList/subtree changes AND
+  aria-selected attribute toggles so the card appears/disappears as the shopper
+  switches tabs. Injection is idempotent via the .cf-alert-inject-wrapper guard.
+  Rendered from layout/theme.liquid when the path contains /tools/recurring.
 {% endcomment %}
 
 <template id="cf-alert-inject-template">
-  {% render 'recharge-alert-schedule' %}
+  <div class="cf-alert-inject-wrapper">{% render 'recharge-alert-schedule' %}</div>
 </template>
 
 <script>
 (function () {
   'use strict';
 
-  var TAB_LABELS = [
-    'Next order',
-    'Subscriptions',
-    'Order history',
-    'Upcoming orders',
-    'Account'
-  ];
+  var TABLIST_SELECTOR = '[role="tablist"]';
+  var TAB_SELECTOR = '[role="tab"]';
 
-  /* Find the tab-navigation row. The portal may render tabs as <a>, <button>,
-     or role-based divs, so match across a broad clickable set — but stay
-     clickable so we never match the page <h1> (which can read "Subscriptions"
-     too). The nav row is the lowest ancestor that contains every matched tab. */
-  function findNavRow() {
-    var clickable = document.querySelectorAll(
-      'a, button, [role="tab"], [role="button"], [role="link"]'
-    );
-    var tabs = [];
-    for (var i = 0; i < clickable.length; i++) {
-      var text = (clickable[i].textContent || '').replace(/\s+/g, ' ').trim();
-      if (TAB_LABELS.indexOf(text) !== -1 && tabs.indexOf(clickable[i]) === -1) {
-        tabs.push(clickable[i]);
-      }
-    }
-    if (tabs.length < 2) return null;
+  /* Tabs that should display the alert. Matched against the active tab's
+     visible text, data-key, or data-testid for resilience. */
+  var TRIGGER_TEXT = ['Subscriptions', 'Upcoming orders'];
+  var TRIGGER_PATTERN = /subscriptions|schedule|upcoming/i;
 
-    /* Climb from the first tab until an ancestor contains ALL matched tabs —
-       that ancestor is the nav row. */
-    var node = tabs[0];
-    while (node && node.parentElement) {
-      var parent = node.parentElement;
-      var count = 0;
-      for (var j = 0; j < tabs.length; j++) {
-        if (parent.contains(tabs[j])) count++;
-      }
-      if (count === tabs.length) return parent;
-      node = parent;
+  function activeTabIsTrigger() {
+    var tabs = document.querySelectorAll(TAB_SELECTOR);
+    for (var i = 0; i < tabs.length; i++) {
+      if (tabs[i].getAttribute('aria-selected') !== 'true') continue;
+
+      var text = (tabs[i].textContent || '').replace(/\s+/g, ' ').trim();
+      if (TRIGGER_TEXT.indexOf(text) !== -1) return true;
+
+      var key = tabs[i].getAttribute('data-key') || '';
+      var testid = tabs[i].getAttribute('data-testid') || '';
+      return TRIGGER_PATTERN.test(key) || TRIGGER_PATTERN.test(testid);
     }
-    return null;
+    return false;
   }
 
-  function injectAlert() {
-    /* Idempotent guard — never inject twice. */
-    if (document.querySelector('.cf-alert-schedule')) return;
+  function sync() {
+    var existing = document.querySelector('.cf-alert-inject-wrapper');
 
-    var navRow = findNavRow();
-    if (!navRow || !navRow.parentElement) return;
+    if (!activeTabIsTrigger()) {
+      if (existing) existing.remove();
+      return;
+    }
+
+    if (existing) return; /* already shown on this trigger tab */
+
+    var tablist = document.querySelector(TABLIST_SELECTOR);
+    if (!tablist || !tablist.parentElement) return;
 
     var template = document.getElementById('cf-alert-inject-template');
     if (!template) return;
 
     var fragment = template.content.cloneNode(true);
-    navRow.parentElement.insertBefore(fragment, navRow);
+    tablist.parentElement.insertBefore(fragment, tablist);
   }
 
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', injectAlert);
+    document.addEventListener('DOMContentLoaded', sync);
   } else {
-    injectAlert();
+    sync();
   }
 
-  /* The portal is a SPA — the nav renders asynchronously and re-renders on tab
-     changes, so keep watching the DOM and re-inject when needed. */
   var observer = new MutationObserver(function () {
-    injectAlert();
+    sync();
   });
 
   var root = document.body || document.documentElement;
-  observer.observe(root, { childList: true, subtree: true });
+  observer.observe(root, {
+    childList: true,
+    subtree: true,
+    attributes: true,
+    attributeFilter: ['aria-selected']
+  });
 })();
 </script>
