@@ -2,10 +2,11 @@
   Did You Know Educational Card — Recharge Affinity Integration
   Displays an educational card with media image, decorative video controls,
   eyebrow label, headline text, and learn more link.
-  Pure markup partial — rendered INSIDE the single "*.sidebar" slot template in
-  affinity-tracker-widget.liquid, just below the cf-tracker-widget. Must NOT
-  declare its own data-recharge-slot template: only one template can bind to a
-  given slot, so a second "*.sidebar" template would collide with the tracker.
+  Pure markup partial — cloned into the Recharge Affinity sidebar
+  ([data-testid="sidebar-container"]) by did-you-know-sidebar-inject.liquid,
+  appended as a sibling of the existing extension div. Must NOT declare its own
+  data-recharge-slot template: only one template can bind to a given slot, so a
+  second "*.sidebar" template would collide with the tracker.
 {% endcomment %}
 
 <style>

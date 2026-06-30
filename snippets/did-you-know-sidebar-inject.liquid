@@ -1,0 +1,58 @@
+{% comment %}
+  Did You Know — Manual Sidebar Injection (Recharge Affinity)
+  ===========================================================
+  The Recharge Affinity portal renders its sidebar as
+  [data-testid="sidebar-container"], which the generic recharge-slot-injector.js
+  does not match (it only looks for [data-slot] / [data-recharge-slot-target] /
+  [data-rc-slot]). As a result the "*.sidebar" slot template never reaches the
+  real sidebar and the Did You Know card never appears.
+
+  This snippet injects the Did You Know card directly into the sidebar container
+  as a SIBLING (last child) of whatever extension div Recharge already renders
+  there — it APPENDS, never overwrites innerHTML, so the existing extension is
+  left untouched. Injection is idempotent: if a .cf-did-you-know already exists
+  in the container it is skipped, so it can never duplicate.
+
+  Rendered from layout/theme.liquid when the path contains /tools/recurring.
+{% endcomment %}
+
+<template id="cf-dyk-sidebar-template">
+  {% render 'did-you-know-card' %}
+</template>
+
+<script>
+(function () {
+  'use strict';
+
+  var SIDEBAR_SELECTOR = '[data-testid="sidebar-container"]';
+
+  function injectDidYouKnow() {
+    var container = document.querySelector(SIDEBAR_SELECTOR);
+    if (!container) return;
+
+    /* Idempotent guard — never inject twice, never duplicate the extension's content */
+    if (container.querySelector('.cf-did-you-know')) return;
+
+    var template = document.getElementById('cf-dyk-sidebar-template');
+    if (!template) return;
+
+    var fragment = template.content.cloneNode(true);
+    container.appendChild(fragment);
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', injectDidYouKnow);
+  } else {
+    injectDidYouKnow();
+  }
+
+  /* The portal is a SPA — the sidebar renders asynchronously and re-renders on
+     tab changes, so keep watching the DOM and re-inject when needed. */
+  var observer = new MutationObserver(function () {
+    injectDidYouKnow();
+  });
+
+  var root = document.body || document.documentElement;
+  observer.observe(root, { childList: true, subtree: true });
+})();
+</script>
