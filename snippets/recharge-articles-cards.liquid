@@ -7,8 +7,8 @@
   Uses .cf-articles BEM prefix to avoid CSS collision with existing
   .cf-did-you-know and .cf-dyk-footer selectors.
 
-  Content is sourced from the "recharge_faq" metaobject (display name
-  "Recharge Article"), one entry per card, rendered in creation order (limit 3).
+  Content is sourced from the "articles_recharge" metaobject (display name
+  "Articles - Recharge"), one entry per card, rendered in creation order (limit 3).
   Fields: image, eyebrow, headline, link_url, link_label.
   If no entries are published, the for-loop {% raw %}{% else %}{% endraw %} block
   renders the hardcoded fallback cards so the section always displays.
@@ -133,7 +133,7 @@
   <div class="cf-articles__scroll">
     <div class="cf-articles__container">
 
-      {%- for article in shop.metaobjects.recharge_faq.values limit: 3 -%}
+      {%- for article in shop.metaobjects.articles_recharge.values limit: 3 -%}
         {%- liquid
           assign article_eyebrow = article.eyebrow.value
           assign article_headline = article.headline.value
