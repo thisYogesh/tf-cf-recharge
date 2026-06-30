@@ -1,0 +1,157 @@
+{% comment %}
+  FAQ Accordion — Recharge Affinity Integration
+  Displays a vertically-stacked FAQ accordion with hardcoded questions and answers.
+  Pure markup partial — rendered INSIDE slot templates in recharge-affinity-homepage.liquid.
+  Uses .cf-faq BEM prefix to avoid CSS collision with existing .cf-did-you-know,
+  .cf-dyk-footer, and .cf-articles selectors.
+
+  Uses native <details>/<summary> elements for accordion expand/collapse without JS,
+  which avoids timing issues with Recharge slot injection.
+
+  All content is hardcoded — no metaobject definition exists for FAQ data.
+{% endcomment %}
+
+<style>
+  .cf-faq {
+    margin-top: 32px;
+    background-color: #FFFFFF;
+    padding: 16px;
+    overflow: hidden;
+  }
+
+  .cf-faq__heading {
+    font-family: 'FT System', var(--font-heading--family), sans-serif;
+    font-weight: 400;
+    font-size: 36px;
+    line-height: 47px;
+    letter-spacing: -0.36px;
+    color: #000000;
+    margin: 0;
+    padding-bottom: 24px;
+    border-bottom: 1px solid #E5E5E5;
+  }
+
+  .cf-faq__items {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .cf-faq__item {
+    border-top: 1px solid #E5E5E5;
+    padding-top: 24px;
+    padding-bottom: 24px;
+  }
+
+  .cf-faq__item:first-child {
+    border-top: none;
+    padding-top: 24px;
+  }
+
+  .cf-faq__item:last-child {
+    padding-bottom: 0;
+  }
+
+  .cf-faq__question {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    cursor: pointer;
+    list-style: none;
+  }
+
+  .cf-faq__question::-webkit-details-marker {
+    display: none;
+  }
+
+  .cf-faq__question-text {
+    font-family: 'FT System', var(--font-body--family), sans-serif;
+    font-weight: 400;
+    font-size: 20px;
+    line-height: 26px;
+    letter-spacing: -0.2px;
+    color: #202635;
+    margin: 0;
+  }
+
+  .cf-faq__chevron {
+    flex-shrink: 0;
+    width: 16px;
+    height: 9px;
+    color: #202635;
+    transition: transform 0.2s ease;
+  }
+
+  .cf-faq__item[open] .cf-faq__chevron {
+    transform: rotate(180deg);
+  }
+
+  .cf-faq__answer {
+    padding-top: 24px;
+    max-width: 92%;
+  }
+
+  .cf-faq__answer-text {
+    font-family: 'FT System', var(--font-body--family), sans-serif;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 22px;
+    color: #202635;
+    margin: 0;
+  }
+</style>
+
+<div class="cf-faq">
+  <h2 class="cf-faq__heading">Frequently Asked Questions</h2>
+
+  <div class="cf-faq__items">
+    <details class="cf-faq__item" open>
+      <summary class="cf-faq__question">
+        <span class="cf-faq__question-text">Which contaminants does your fridge filter target?</span>
+        <svg class="cf-faq__chevron" xmlns="http://www.w3.org/2000/svg" width="16" height="9" viewBox="0 0 16 9" fill="none">
+          <path d="M1 1L8 8L15 1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </summary>
+      <div class="cf-faq__answer">
+        <p class="cf-faq__answer-text">Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.</p>
+      </div>
+    </details>
+
+    <details class="cf-faq__item">
+      <summary class="cf-faq__question">
+        <span class="cf-faq__question-text">How long does your inline fridge filter last?</span>
+        <svg class="cf-faq__chevron" xmlns="http://www.w3.org/2000/svg" width="16" height="9" viewBox="0 0 16 9" fill="none">
+          <path d="M1 1L8 8L15 1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </summary>
+      <div class="cf-faq__answer">
+        <p class="cf-faq__answer-text">Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.</p>
+      </div>
+    </details>
+
+    <details class="cf-faq__item">
+      <summary class="cf-faq__question">
+        <span class="cf-faq__question-text">Is it really compatible with any fridge?</span>
+        <svg class="cf-faq__chevron" xmlns="http://www.w3.org/2000/svg" width="16" height="9" viewBox="0 0 16 9" fill="none">
+          <path d="M1 1L8 8L15 1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </summary>
+      <div class="cf-faq__answer">
+        <p class="cf-faq__answer-text">Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.</p>
+      </div>
+    </details>
+
+    <details class="cf-faq__item">
+      <summary class="cf-faq__question">
+        <span class="cf-faq__question-text">Do I need to remove my refrigerator's built-in filter?</span>
+        <svg class="cf-faq__chevron" xmlns="http://www.w3.org/2000/svg" width="16" height="9" viewBox="0 0 16 9" fill="none">
+          <path d="M1 1L8 8L15 1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </summary>
+      <div class="cf-faq__answer">
+        <p class="cf-faq__answer-text">Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.</p>
+      </div>
+    </details>
+  </div>
+</div>
