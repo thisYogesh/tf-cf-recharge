@@ -116,7 +116,65 @@
   }
 
   /* ===================================================
-     Product Image — Rotated Background Wrapper
+     Subscription Item Card (.recharge-component-subscription-item)
+     Figma 767:13161 — the visible white bordered card.
+     (.recharge-card above is now a transparent outer wrapper.)
+     Layout: 120px image box | title + price + freq pill | caret right
+     =================================================== */
+  body.cf-page-subscriptions .recharge-component-subscription-item {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    gap: 20px !important;
+    background: #FFFFFF !important;
+    border: 1px solid #D9E8F4 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    padding: 20px 8px 20px 18px !important;
+    box-sizing: border-box !important;
+    width: 100% !important;
+  }
+
+  /* 1px divider between stacked items */
+  body.cf-page-subscriptions .recharge-component-subscription-item + .recharge-component-subscription-item {
+    margin-top: 1px !important;
+  }
+
+  /* Text lockup (title + price + frequency) — column, gap 8px, takes
+     remaining width so the caret is pushed to the far right */
+  body.cf-page-subscriptions .recharge-component-subscription-item > *:not(.cf-sub-img-wrap):not(svg):not(a):not(button) {
+    flex: 1 1 auto !important;
+    min-width: 0 !important;
+  }
+
+  /* Product title — "Pitcher Replacement Filter" */
+  body.cf-page-subscriptions .recharge-component-subscription-item .recharge-heading {
+    font-size: 18px !important;
+    line-height: 1.4 !important;
+    color: #24293B !important;
+    font-weight: 400 !important;
+    font-family: 'FT System', var(--font-heading--family), sans-serif !important;
+    margin: 0 !important;
+  }
+
+  /* Price line — "1 x $50.00" */
+  body.cf-page-subscriptions .recharge-component-subscription-item .recharge-text {
+    font-size: 16px !important;
+    line-height: 1.4 !important;
+    color: #202635 !important;
+    font-weight: 400 !important;
+    font-family: 'FT System', var(--font-body--family), sans-serif !important;
+    margin: 0 !important;
+  }
+
+  /* Caret / chevron link on the right */
+  body.cf-page-subscriptions .recharge-component-subscription-item svg {
+    flex-shrink: 0 !important;
+    color: #2C70BB !important;
+  }
+
+  /* ===================================================
+     Product Image — Background Wrapper
      =================================================== */
   body.cf-page-subscriptions .cf-sub-img-wrap {
     position: relative;
@@ -134,7 +192,6 @@
     inset: 0;
     background: #F2F7FB;
     border-radius: 4px;
-    transform: rotate(3.1deg);
   }
 
   body.cf-page-subscriptions .cf-sub-img-wrap .recharge-image,
