@@ -352,18 +352,10 @@
 </script>
 
 {% comment %} =============================================
-   SLOT: Upcoming Orders Header — Contaminant Alert
+   Contaminant Alert is injected ABOVE the tab navigation by
+   snippets/recharge-alert-inject.liquid (a .header slot would render it
+   BELOW the tabs, which is not where the design wants it).
    ============================================= {% endcomment %}
-<script type="text/html" data-recharge-slot="schedule.header">
-  {% render 'recharge-alert-schedule' %}
-</script>
-
-{% comment %} =============================================
-   SLOT: Subscriptions Header — Contaminant Alert
-   ============================================= {% endcomment %}
-<script type="text/html" data-recharge-slot="subscriptions.header">
-  {% render 'recharge-alert-schedule' %}
-</script>
 
 {% comment %} Sidebar tracker is now handled by the cf-tracker-widget Web Component
    — see snippets/affinity-tracker-widget.liquid {% endcomment %}

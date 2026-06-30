@@ -1,0 +1,89 @@
+{% comment %}
+  Water Contaminant Alert — Manual Injection ABOVE the portal tab navigation
+  ==========================================================================
+  The Recharge Affinity portal renders its primary tab navigation
+  (Next order / Subscriptions / Order history / Upcoming orders / Account)
+  ABOVE the per-page ".header" slot. A slot template therefore can only place
+  content BELOW the tabs.
+
+  To position the alert ABOVE the tab buttons, this snippet injects the alert
+  card as the sibling immediately preceding the tab-navigation row. The nav row
+  is located by text-matching the known tab labels and walking up to the first
+  shared parent — no dependency on Recharge's internal class names / testids.
+
+  Injection is idempotent (skips if a .cf-alert-schedule already exists) and a
+  MutationObserver re-runs it because the portal is a SPA that re-renders on tab
+  changes. Rendered from layout/theme.liquid when the path contains
+  /tools/recurring.
+{% endcomment %}
+
+<template id="cf-alert-inject-template">
+  {% render 'recharge-alert-schedule' %}
+</template>
+
+<script>
+(function () {
+  'use strict';
+
+  var TAB_LABELS = [
+    'Next order',
+    'Subscriptions',
+    'Order history',
+    'Upcoming orders',
+    'Account'
+  ];
+
+  /* Find the tab-navigation row: the first shared ancestor that contains at
+     least two of the known tab buttons. */
+  function findNavRow() {
+    var clickable = document.querySelectorAll('a, button');
+    var tabs = [];
+    for (var i = 0; i < clickable.length; i++) {
+      var text = (clickable[i].textContent || '').trim();
+      if (TAB_LABELS.indexOf(text) !== -1) tabs.push(clickable[i]);
+    }
+    if (tabs.length < 2) return null;
+
+    var node = tabs[0];
+    while (node && node.parentElement) {
+      var parent = node.parentElement;
+      var count = 0;
+      for (var j = 0; j < tabs.length; j++) {
+        if (parent.contains(tabs[j])) count++;
+      }
+      if (count >= 2) return parent;
+      node = parent;
+    }
+    return null;
+  }
+
+  function injectAlert() {
+    /* Idempotent guard — never inject twice. */
+    if (document.querySelector('.cf-alert-schedule')) return;
+
+    var navRow = findNavRow();
+    if (!navRow || !navRow.parentElement) return;
+
+    var template = document.getElementById('cf-alert-inject-template');
+    if (!template) return;
+
+    var fragment = template.content.cloneNode(true);
+    navRow.parentElement.insertBefore(fragment, navRow);
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', injectAlert);
+  } else {
+    injectAlert();
+  }
+
+  /* The portal is a SPA — the nav renders asynchronously and re-renders on tab
+     changes, so keep watching the DOM and re-inject when needed. */
+  var observer = new MutationObserver(function () {
+    injectAlert();
+  });
+
+  var root = document.body || document.documentElement;
+  observer.observe(root, { childList: true, subtree: true });
+})();
+</script>
