@@ -147,6 +147,18 @@
   body.cf-page-subscriptions .recharge-component-subscription-item > *:not(.cf-sub-img-wrap):not(svg):not(a):not(button):not([class*="bundle" i]) {
     flex: 1 1 auto !important;
     min-width: 0 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 8px !important;
+  }
+
+  /* Element sequence inside the lockup: title → quantity × price → badge.
+     Recharge renders the frequency badge between title and price, so push
+     it to the end. (order only takes effect because the lockup above is a
+     flex column.) */
+  body.cf-page-subscriptions .recharge-component-subscription-item .cf-freq-badge {
+    order: 9 !important;
   }
 
   /* Bundle contents — drop below the main row, full width */
