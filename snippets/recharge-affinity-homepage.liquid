@@ -351,7 +351,19 @@
   </div>
 </script>
 
-{% comment %} SLOT: Overview Footer — Upsell Placeholder {% endcomment %}
+{% comment %} =============================================
+   SLOT: Upcoming Orders Header — Contaminant Alert
+   ============================================= {% endcomment %}
+<script type="text/html" data-recharge-slot="schedule.header">
+  {% render 'recharge-alert-schedule' %}
+</script>
+
+{% comment %} Sidebar tracker is now handled by the cf-tracker-widget Web Component
+   — see snippets/affinity-tracker-widget.liquid {% endcomment %}
+
+{% comment %} =============================================
+   SLOT: Overview Footer — Upsell Placeholder
+   ============================================= {% endcomment %}
 <script type="text/html" data-recharge-slot="overview.footer">
   <div class="rc-upsell-placeholder" id="rc-upsell">
     X-Sell/Upsell Container Placeholder
