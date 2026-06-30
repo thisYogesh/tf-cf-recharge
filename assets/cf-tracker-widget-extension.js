@@ -565,6 +565,10 @@ const EWG_SYSTEM_INFO_URL = 'https://waterapi.ewg.org/systeminformation.php';
 
 const ELIGIBLE_PRODUCT_KEYWORD = 'Pitcher Replacement Filter';
 
+// Default looping background video (used when no `bg-video` attribute is set,
+// e.g. when uploaded as a Recharge Custom Extension with no Liquid wrapper).
+const DEFAULT_BG_VIDEO = 'https://cdn.shopify.com/videos/c/o/v/6acf20f1b2664e0c86ba01e7c03cfd2d.mp4';
+
 const DAYS_PER_FILTER_BY_HOUSEHOLD = { '1': 120, '2': 90, '3': 60, '4': 60 };
 const DEFAULT_DAYS_PER_FILTER = 90;
 const DEFAULT_HOUSEHOLD_SIZE = '2';
@@ -1119,7 +1123,7 @@ class CfTrackerWidget extends HTMLElement {
     const fillLength = arcLength * fillFraction;
 
     const bgImage = this.getAttribute('bg-image');
-    const bgVideo = this.getAttribute('bg-video');
+    const bgVideo = this.getAttribute('bg-video') || DEFAULT_BG_VIDEO;
     const bgStyle = (!bgVideo && bgImage) ? `background-image: url('${bgImage}');` : '';
 
     const existingVideo = this.shadowRoot.querySelector('.cf-tracker__bg-video');
