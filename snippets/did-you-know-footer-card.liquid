@@ -6,7 +6,18 @@
   in recharge-affinity-homepage.liquid.
   Uses .cf-dyk-footer BEM prefix to avoid CSS collision with the existing
   .cf-did-you-know sidebar card (both render in the same DOM on Subscriptions tab).
+
+  Content is sourced from the "did_you_know_subscriptions_footer" metaobject
+  (first entry). Hardcoded copy below is the fallback if no entry is published.
 {% endcomment %}
+
+{% liquid
+  assign dyk = shop.metaobjects.did_you_know_subscriptions_footer.values.first
+  assign dyk_eyebrow = dyk.eyebrow.value | default: 'Did you know?'
+  assign dyk_headline = dyk.headline.value | default: 'In addition to protecting you from harmful contaminants in your water, your pitcher filter subscription has saved 800 plastic water bottles from the landfill.'
+  assign dyk_cta_label = dyk.cta_label.value | default: 'Learn more'
+  assign dyk_cta_url = dyk.cta_url.value | default: '#'
+%}
 
 <style>
   .cf-dyk-footer {
@@ -101,15 +112,15 @@
   <div class="cf-dyk-footer__text-lockup">
     <div class="cf-dyk-footer__heading">
       <div class="cf-dyk-footer__heading-lockup">
-        <p class="cf-dyk-footer__eyebrow">Did you know?</p>
-        <p class="cf-dyk-footer__headline">In addition to protecting you from harmful contaminants in your water, your pitcher filter subscription has saved 800 plastic water bottles from the landfill.</p>
+        <p class="cf-dyk-footer__eyebrow">{{ dyk_eyebrow }}</p>
+        <p class="cf-dyk-footer__headline">{{ dyk_headline }}</p>
       </div>
       <div class="cf-dyk-footer__icon">
         {{ 'icon.svg' | inline_asset_content }}
       </div>
     </div>
-    <a href="#" class="cf-dyk-footer__learn-more">
-      Learn more
+    <a href="{{ dyk_cta_url }}" class="cf-dyk-footer__learn-more">
+      {{ dyk_cta_label }}
       <span class="cf-dyk-footer__learn-more-arrow">&rarr;</span>
     </a>
   </div>
