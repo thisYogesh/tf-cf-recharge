@@ -102,25 +102,52 @@
   }
 </style>
 
+{%- liquid
+  # Hardcoded fallbacks — overridden by the did_you_know_upcoming_orders metaobject when an entry is published.
+  assign dyk_eyebrow = 'DID YOU KNOW?'
+  assign dyk_heading = 'Tap water can contain contaminants and forever chemicals even when it meets local regulations.'
+  assign dyk_link_label = 'Learn more'
+  assign dyk_link_url = '#'
+  assign dyk_image = nil
+
+  for entry in shop.metaobjects.did_you_know_upcoming_orders.values limit: 1
+    assign dyk_eyebrow = entry.eyebrow.value | default: dyk_eyebrow
+    assign dyk_heading = entry.heading.value | default: dyk_heading
+    assign dyk_link_label = entry.link_label.value | default: dyk_link_label
+    assign dyk_link_url = entry.link_url.value | default: dyk_link_url
+    assign dyk_image = entry.image.value
+  endfor
+-%}
+
 <div class="cf-dyk-schedule">
   <div class="cf-dyk-schedule__media">
-    <img
-      src="{{ 'media-desktop-I1150861211376605.png' | file_url }}"
-      alt="Did you know educational content"
-      width="358"
-      height="201"
-      loading="lazy"
-    >
+    {%- if dyk_image != blank -%}
+      <img
+        src="{{ dyk_image | image_url: width: 716 }}"
+        alt="{{ dyk_eyebrow | escape }}"
+        width="358"
+        height="201"
+        loading="lazy"
+      >
+    {%- else -%}
+      <img
+        src="{{ 'media-desktop-I1150861211376605.png' | file_url }}"
+        alt="Did you know educational content"
+        width="358"
+        height="201"
+        loading="lazy"
+      >
+    {%- endif -%}
   </div>
   <div class="cf-dyk-schedule__text-lockup">
     <div class="cf-dyk-schedule__heading">
       <div class="cf-dyk-schedule__heading-lockup">
-        <p class="cf-dyk-schedule__eyebrow">DID YOU KNOW?</p>
-        <p class="cf-dyk-schedule__headline">Tap water can contain contaminants and forever chemicals even when it meets local regulations.</p>
+        <p class="cf-dyk-schedule__eyebrow">{{ dyk_eyebrow }}</p>
+        <p class="cf-dyk-schedule__headline">{{ dyk_heading | newline_to_br }}</p>
       </div>
     </div>
-    <a href="#" class="cf-dyk-schedule__learn-more">
-      Learn more
+    <a href="{{ dyk_link_url }}" class="cf-dyk-schedule__learn-more">
+      {{ dyk_link_label }}
       <span class="cf-dyk-schedule__learn-more-arrow">&rarr;</span>
     </a>
   </div>
