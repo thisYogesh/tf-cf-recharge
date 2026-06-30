@@ -11,12 +11,23 @@
   (first entry). Hardcoded copy below is the fallback if no entry is published.
 {% endcomment %}
 
+{% comment %}
+  shop.metaobjects.<type>.values is a lazy drop — .first / [0] return blank.
+  Iterate with `limit: 1` to read the first entry. Fallbacks are assigned
+  first so the card still renders if no entry is published.
+{% endcomment %}
 {% liquid
-  assign dyk = shop.metaobjects.did_you_know_subscriptions_footer.values.first
-  assign dyk_eyebrow = dyk.eyebrow.value | default: 'Did you know?'
-  assign dyk_headline = dyk.headline.value | default: 'In addition to protecting you from harmful contaminants in your water, your pitcher filter subscription has saved 800 plastic water bottles from the landfill.'
-  assign dyk_cta_label = dyk.cta_label.value | default: 'Learn more'
-  assign dyk_cta_url = dyk.cta_url.value | default: '#'
+  assign dyk_eyebrow = 'Did you know?'
+  assign dyk_headline = 'In addition to protecting you from harmful contaminants in your water, your pitcher filter subscription has saved 800 plastic water bottles from the landfill.'
+  assign dyk_cta_label = 'Learn more'
+  assign dyk_cta_url = '#'
+
+  for entry in shop.metaobjects.did_you_know_subscriptions_footer.values limit: 1
+    assign dyk_eyebrow = entry.eyebrow.value | default: dyk_eyebrow
+    assign dyk_headline = entry.headline.value | default: dyk_headline
+    assign dyk_cta_label = entry.cta_label.value | default: dyk_cta_label
+    assign dyk_cta_url = entry.cta_url.value | default: dyk_cta_url
+  endfor
 %}
 
 <style>
