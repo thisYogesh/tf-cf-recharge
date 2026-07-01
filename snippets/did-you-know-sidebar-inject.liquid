@@ -7,10 +7,10 @@
   the real sidebar and the Did You Know card never appears.
 
   This snippet injects the Did You Know card directly into the sidebar container
-  as a SIBLING (last child) of whatever extension div Recharge already renders
-  there — it APPENDS, never overwrites innerHTML, so the existing extension is
-  left untouched. Injection is idempotent: if a .cf-did-you-know already exists
-  in the container it is skipped, so it can never duplicate.
+  positioned just BELOW the cf-tracker-widget element (pitcher tracker). If the
+  tracker has not yet rendered, it falls back to appending as the last child so
+  the card still appears. Injection is idempotent: if a .cf-did-you-know already
+  exists in the container it is skipped, so it can never duplicate.
 
   Rendered from layout/theme.liquid when the path contains /tools/recurring.
 {% endcomment %}
@@ -36,7 +36,14 @@
     if (!template) return;
 
     var fragment = template.content.cloneNode(true);
-    container.appendChild(fragment);
+
+    /* Position the card just below the pitcher tracker widget when present */
+    var tracker = container.querySelector('cf-tracker-widget');
+    if (tracker) {
+      tracker.parentNode.insertBefore(fragment, tracker.nextSibling);
+    } else {
+      container.appendChild(fragment);
+    }
   }
 
   if (document.readyState === 'loading') {

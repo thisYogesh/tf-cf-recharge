@@ -2,12 +2,32 @@
   Did You Know Educational Card — Recharge Affinity Integration
   Displays an educational card with media image, decorative video controls,
   eyebrow label, headline text, and learn more link.
+  Content is driven by the `did_you_know_upcoming_orders` metaobject when an
+  entry is published; hardcoded fallback values render when no entry exists.
   Pure markup partial — cloned into the Recharge Affinity sidebar
   ([data-testid="sidebar-container"]) by did-you-know-sidebar-inject.liquid,
-  appended as a sibling of the existing extension div. Must NOT declare its own
+  positioned just below the cf-tracker-widget element. Must NOT declare its own
   data-recharge-slot template: only one template can bind to a given slot, so a
   second "*.sidebar" template would collide with the tracker.
 {% endcomment %}
+
+{% liquid
+  assign dyk_image = blank
+  assign dyk_eyebrow = 'DID YOU KNOW?'
+  assign dyk_headline = 'Regular replacement ensures consistent contaminant reduction and retains beneficial minerals in every glass.'
+  assign dyk_link_label = 'Learn more'
+  assign dyk_link_url = '#'
+%}
+
+{% for entry in shop.metaobjects.did_you_know_upcoming_orders.values limit: 1 %}
+  {% liquid
+    assign dyk_image = entry.image.value
+    assign dyk_eyebrow = entry.eyebrow.value | default: dyk_eyebrow
+    assign dyk_headline = entry.heading.value | default: dyk_headline
+    assign dyk_link_label = entry.link_label.value | default: dyk_link_label
+    assign dyk_link_url = entry.link_url.value | default: dyk_link_url
+  %}
+{% endfor %}
 
 <style>
   .cf-did-you-know {
@@ -161,13 +181,17 @@
 
   <div class="cf-did-you-know">
     <div class="cf-did-you-know__media">
-      <img
-        src="{{ 'media-did-you-know-section-I1205985011175978.png' | file_url }}"
-        alt="Did you know educational video"
-        width="358"
-        height="201"
-        loading="lazy"
-      >
+      {% if dyk_image != blank %}
+        {{ dyk_image | image_url: width: 358 | image_tag: alt: 'Did you know educational video', width: 358, height: 201, loading: 'lazy' }}
+      {% else %}
+        <img
+          src="{{ 'media-did-you-know-section-I1205985011175978.png' | file_url }}"
+          alt="Did you know educational video"
+          width="358"
+          height="201"
+          loading="lazy"
+        >
+      {% endif %}
       <div class="cf-did-you-know__video-controls">
         <span class="cf-did-you-know__control-frame cf-did-you-know__control-frame--play">
           <span class="cf-did-you-know__control-text">&#9654;</span>
@@ -189,11 +213,11 @@
     </div>
     <div class="cf-did-you-know__text-lockup">
       <div class="cf-did-you-know__heading-lockup">
-        <p class="cf-did-you-know__eyebrow">Did you know?</p>
-        <p class="cf-did-you-know__headline">Regular replacement ensures consistent contaminant reduction and retains beneficial minerals in every glass.</p>
+        <p class="cf-did-you-know__eyebrow">{{ dyk_eyebrow }}</p>
+        <p class="cf-did-you-know__headline">{{ dyk_headline | newline_to_br }}</p>
       </div>
-      <a href="#" class="cf-did-you-know__learn-more">
-        Learn more
+      <a href="{{ dyk_link_url }}" class="cf-did-you-know__learn-more">
+        {{ dyk_link_label }}
         <span class="cf-did-you-know__learn-more-arrow">&rarr;</span>
       </a>
     </div>
