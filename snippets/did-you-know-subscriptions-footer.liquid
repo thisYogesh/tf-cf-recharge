@@ -1,0 +1,156 @@
+{% comment %}
+  Did You Know — Subscriptions Tab Footer Card
+  =============================================
+  Self-contained snippet rendered inside the Recharge Affinity portal
+  subscriptions.footer slot. Displays a metaobject-driven educational
+  card (did_you_know_subscriptions_footer) with image + text lockup.
+{% endcomment %}
+
+<style>
+  /* =============================================
+     Did You Know — Subscriptions Footer Card
+     ============================================= */
+
+  .cf-dyk-footer {
+    display: flex;
+    flex-direction: row;
+    background-color: #E6F0F8;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  .cf-dyk-footer__media {
+    flex: 0 0 48%;
+    min-width: 0;
+  }
+
+  .cf-dyk-footer__media img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .cf-dyk-footer__content {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 20px 20px 20px 16px;
+  }
+
+  .cf-dyk-footer__heading-row {
+    display: flex;
+    flex-direction: row;
+    gap: 24px;
+  }
+
+  .cf-dyk-footer__heading-lockup {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    justify-content: flex-end;
+    padding-top: 8px;
+  }
+
+  .cf-dyk-footer__eyebrow {
+    font-family: 'FT System Mono', var(--font-subheading--family), monospace;
+    font-size: 14px;
+    line-height: 20px;
+    letter-spacing: 0.56px;
+    text-transform: uppercase;
+    font-weight: 400;
+    color: #202635;
+    margin: 0;
+  }
+
+  .cf-dyk-footer__headline {
+    font-family: 'FT System', var(--font-heading--family), sans-serif;
+    font-size: 16px;
+    line-height: 22px;
+    font-weight: 400;
+    color: #202635;
+    margin: 0;
+  }
+
+  .cf-dyk-footer__icon {
+    flex-shrink: 0;
+    width: 40px;
+    height: 40px;
+  }
+
+  .cf-dyk-footer__icon svg {
+    width: 40px;
+    height: 40px;
+  }
+
+  .cf-dyk-footer__link {
+    display: inline-flex;
+    flex-direction: row;
+    gap: 4px;
+    align-items: center;
+    border-bottom: 1px solid #202635;
+    padding-bottom: 4px;
+    text-decoration: none;
+    align-self: flex-start;
+  }
+
+  .cf-dyk-footer__link-text {
+    font-family: 'FT System', var(--font-heading--family), sans-serif;
+    font-size: 14px;
+    line-height: 20px;
+    font-weight: 400;
+    color: #202635;
+  }
+
+  .cf-dyk-footer__link-arrow {
+    font-family: Inter, var(--font-body--family), sans-serif;
+    font-size: 11px;
+    line-height: 13px;
+    font-weight: 500;
+    color: #202635;
+  }
+</style>
+
+{%- assign dyk_eyebrow = 'DID YOU KNOW?' -%}
+{%- assign dyk_headline = 'Tap water can contain contaminants and forever chemicals even when it meets local regulations.' -%}
+{%- assign dyk_cta_label = 'Learn more' -%}
+{%- assign dyk_cta_url = '#' -%}
+{%- assign dyk_image = 'https://cdn.shopify.com/s/files/1/1000/8959/4135/files/media-did-you-know-section-I1205985011175978.png?v=1782738410' -%}
+
+{%- for entry in shop.metaobjects.did_you_know_subscriptions_footer.values limit: 1 -%}
+  {%- assign dyk_eyebrow = entry.eyebrow.value | default: dyk_eyebrow -%}
+  {%- assign dyk_headline = entry.headline.value | default: dyk_headline -%}
+  {%- assign dyk_cta_label = entry.cta_label.value | default: dyk_cta_label -%}
+  {%- assign dyk_cta_url = entry.cta_url.value | default: dyk_cta_url -%}
+{%- endfor -%}
+
+<div class="cf-dyk-footer">
+  <div class="cf-dyk-footer__media">
+    <img
+      src="{{ dyk_image }}"
+      alt="{{ dyk_eyebrow }}"
+      width="358"
+      height="201"
+      loading="lazy"
+    >
+  </div>
+  <div class="cf-dyk-footer__content">
+    <div class="cf-dyk-footer__heading-row">
+      <div class="cf-dyk-footer__heading-lockup">
+        <p class="cf-dyk-footer__eyebrow">{{ dyk_eyebrow }}</p>
+        <p class="cf-dyk-footer__headline">{{ dyk_headline | newline_to_br }}</p>
+      </div>
+      <div class="cf-dyk-footer__icon">
+        {{ 'icon.svg' | inline_asset_content }}
+      </div>
+    </div>
+    <a href="{{ dyk_cta_url }}" class="cf-dyk-footer__link">
+      <span class="cf-dyk-footer__link-text">{{ dyk_cta_label }}</span>
+      <span class="cf-dyk-footer__link-arrow">&rarr;</span>
+    </a>
+  </div>
+</div>
