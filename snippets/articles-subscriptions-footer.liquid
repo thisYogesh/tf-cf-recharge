@@ -1,0 +1,171 @@
+{% comment %}
+  Articles — Subscriptions Tab Footer Cards
+  ==========================================
+  Self-contained snippet rendered inside the Recharge Affinity portal
+  subscriptions.footer slot. Displays a metaobject-driven horizontal
+  row of article cards (articles_recharge_subscription_footer →
+  articles_recharge) with image + text lockup.
+{% endcomment %}
+
+<style>
+  /* =============================================
+     Articles — Subscriptions Footer Cards
+     ============================================= */
+
+  .cf-articles-sub-footer {
+    margin-top: 32px;
+  }
+
+  .cf-articles-sub-footer__scroll {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .cf-articles-sub-footer__scroll::-webkit-scrollbar {
+    display: none;
+  }
+
+  .cf-articles-sub-footer__row {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    align-items: center;
+  }
+
+  .cf-articles-sub-footer__card {
+    flex: 0 0 312px;
+    border-radius: 8px;
+    overflow: hidden;
+    background-color: #E6F0F8;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .cf-articles-sub-footer__media {
+    overflow: hidden;
+  }
+
+  .cf-articles-sub-footer__media img {
+    display: block;
+    width: 100%;
+    aspect-ratio: 312 / 175;
+    object-fit: cover;
+  }
+
+  .cf-articles-sub-footer__text-lockup {
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    justify-content: space-between;
+    padding: 12px 16px 16px 16px;
+    flex: 1;
+  }
+
+  .cf-articles-sub-footer__heading {
+    display: flex;
+    flex-direction: row;
+    gap: 8px;
+  }
+
+  .cf-articles-sub-footer__heading-lockup {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    justify-content: flex-end;
+    padding-top: 8px;
+  }
+
+  .cf-articles-sub-footer__eyebrow {
+    font-family: 'FT System Mono', var(--font-subheading--family), monospace;
+    font-size: 14px;
+    line-height: 20px;
+    letter-spacing: 0.56px;
+    text-transform: uppercase;
+    font-weight: 400;
+    color: #202635;
+    margin: 0;
+  }
+
+  .cf-articles-sub-footer__headline {
+    font-family: 'FT System', var(--font-heading--family), sans-serif;
+    font-size: 18px;
+    line-height: 25px;
+    font-weight: 400;
+    color: #202635;
+    margin: 0;
+  }
+
+  .cf-articles-sub-footer__link {
+    display: inline-flex;
+    flex-direction: row;
+    gap: 4px;
+    align-items: center;
+    border-bottom: 1px solid #202635;
+    padding-bottom: 4px;
+    text-decoration: none;
+    align-self: flex-start;
+  }
+
+  .cf-articles-sub-footer__link-text {
+    font-family: 'FT System', var(--font-heading--family), sans-serif;
+    font-size: 14px;
+    line-height: 20px;
+    font-weight: 400;
+    color: #202635;
+  }
+
+  .cf-articles-sub-footer__link-arrow {
+    font-family: Inter, var(--font-body--family), sans-serif;
+    font-size: 11px;
+    line-height: 13px;
+    font-weight: 500;
+    color: #202635;
+  }
+</style>
+
+{%- assign cf_art_entries = shop.metaobjects.articles_recharge_subscription_footer.values -%}
+{%- if cf_art_entries.size > 0 -%}
+  <div class="cf-articles-sub-footer">
+    <div class="cf-articles-sub-footer__scroll">
+      <div class="cf-articles-sub-footer__row">
+        {%- for entry in cf_art_entries -%}
+          {%- assign article_ref = entry.article.value -%}
+          {%- if article_ref != blank -%}
+            {%- assign art_image = article_ref.image.value -%}
+            {%- assign art_eyebrow = article_ref.eyebrow.value | default: '' -%}
+            {%- assign art_headline = article_ref.headline.value | default: '' -%}
+            {%- assign art_link_label = article_ref.link_label.value | default: 'Read more' -%}
+            {%- assign art_link_url = article_ref.link_url.value | default: '#' -%}
+
+            <div class="cf-articles-sub-footer__card">
+              {%- if art_image != blank -%}
+                <div class="cf-articles-sub-footer__media">
+                  {{ art_image | image_url: width: 624 | image_tag: loading: 'lazy', alt: art_eyebrow }}
+                </div>
+              {%- endif -%}
+              <div class="cf-articles-sub-footer__text-lockup">
+                <div class="cf-articles-sub-footer__heading">
+                  <div class="cf-articles-sub-footer__heading-lockup">
+                    {%- if art_eyebrow != blank -%}
+                      <p class="cf-articles-sub-footer__eyebrow">{{ art_eyebrow }}</p>
+                    {%- endif -%}
+                    {%- if art_headline != blank -%}
+                      <p class="cf-articles-sub-footer__headline">{{ art_headline | newline_to_br }}</p>
+                    {%- endif -%}
+                  </div>
+                </div>
+                <a href="{{ art_link_url }}" class="cf-articles-sub-footer__link">
+                  <span class="cf-articles-sub-footer__link-text">{{ art_link_label }}</span>
+                  <span class="cf-articles-sub-footer__link-arrow">&rarr;</span>
+                </a>
+              </div>
+            </div>
+          {%- endif -%}
+        {%- endfor -%}
+      </div>
+    </div>
+  </div>
+{%- endif -%}
